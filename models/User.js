@@ -17,7 +17,7 @@ const UserSchema = new Schema({
         default: 'user',
     },
     profile: {
-        type: Schema.types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'Profile',
         unique: true,
     },

@@ -57,7 +57,7 @@ app.use("/api", (req, res, next) => {
     next();
 });
 
-app.use("*", (req, res) => {
+app.use((req, res) => {
     res.status(404).render("error", {
         status: 404,
         message: "Page not found",

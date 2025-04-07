@@ -1,5 +1,5 @@
 const rateLimit = require('express-rate-limit');
-
+const sessionExists = require('../middleware/sessionExists');
 const router = require('express').Router();
 
 router.use(
@@ -9,6 +9,8 @@ router.use(
         message: 'Too many requests from this IP, please try again later',
     })
 );
+
+router.use(sessionExists); // Middleware to check if session exists
 
 const register = require('../controllers/auth/register');
 const login = require('../controllers/auth/login');

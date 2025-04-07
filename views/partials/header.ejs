@@ -1,0 +1,49 @@
+<header class="header">
+    <div class="header-content">
+        <h1 class="page-title"><%= title %></h1>
+        <div class="header-actions">
+            <div class="search-bar">
+                <input type="text" placeholder="Search..." id="global-search">
+                <button class="search-button">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+            <div class="user-profile-dropdown">
+                <button class="dropdown-toggle">
+                    <% if (user.profile && user.profile.pfp) { %>
+                        <img src="/assets/uploads/<%= user.profile.pfp %>" alt="Profile Photo" class="user-avatar">
+                    <% } else { %>
+                        <div class="user-avatar default-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    <% } %>
+                    <span class="dropdown-username">
+                        <% if (user.profile && user.profile.firstName) { %>
+                            <%= user.profile.firstName %>
+                        <% } else { %>
+                            <%= user.email.split('@')[0] %>
+                        <% } %>
+                    </span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="dropdown-menu">
+                    <a href="/profile" class="dropdown-item">
+                        <i class="fas fa-user-circle"></i> My Profile
+                    </a>
+                    <% if (typeof isAdmin !== 'undefined' && isAdmin) { %>
+                        <a href="/admin/users" class="dropdown-item">
+                            <i class="fas fa-users-cog"></i> User Management
+                        </a>
+                        <a href="/admin/categories" class="dropdown-item">
+                            <i class="fas fa-tags"></i> Categories
+                        </a>
+                    <% } %>
+                    <div class="dropdown-divider"></div>
+                    <button class="dropdown-item logout-button" id="logout-button">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>

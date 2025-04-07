@@ -1,0 +1,175 @@
+<%- include('layout-start', { title: title, user: user, isAdmin: isAdmin }) %>
+
+<div class="profile-container">
+    <div class="profile-header">
+        <h2>My Profile</h2>
+        <div class="profile-actions">
+            <button class="btn btn-danger" id="delete-profile-btn">
+                <i class="fas fa-trash"></i> Delete Profile
+            </button>
+        </div>
+    </div>
+    
+    <!-- Profile Missing Banner -->
+    <div id="profile-missing-banner" class="alert alert-warning" style="display: none;">
+        <i class="fas fa-exclamation-triangle"></i>
+        <strong>Profile Incomplete:</strong> Please complete your profile to unlock all features of the helpdesk system.
+    </div>
+    
+    <div class="profile-content">
+        <!-- Create Profile Section (initially hidden) -->
+        <div id="create-profile-section" class="profile-form-card" style="display: none;">
+            <div class="card-header">
+                <h3>Create Your Profile</h3>
+            </div>
+            <div class="card-body">
+                <form id="create-profile-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="create-firstName">First Name</label>
+                            <input type="text" id="create-firstName" name="firstName" placeholder="Enter your first name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="create-lastName">Last Name</label>
+                            <input type="text" id="create-lastName" name="lastName" placeholder="Enter your last name" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="create-phone">Phone Number</label>
+                            <input type="tel" id="create-phone" name="phone" placeholder="Enter your phone number" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="create-profession">Profession</label>
+                            <select id="create-profession" name="profession">
+                                <option value="">Select a profession</option>
+                                <% professions.forEach(function(profession) { %>
+                                    <option value="<%= profession._id %>"><%= profession.name %></option>
+                                <% }); %>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Create Profile</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Update Profile Section -->
+        <div id="update-profile-section" style="display: none;">
+            <div class="profile-card">
+                <div class="card-header">
+                    <h3>Account Information</h3>
+                </div>
+                <div class="card-body">
+                    <div class="profile-info">
+                        <div class="profile-photo-section">
+                            <div class="profile-photo">
+                                <% if (user.profile && user.profile.pfp) { %>
+                                    <img src="/assets/uploads/<%= user.profile.pfp %>" alt="Profile Photo" id="profile-image">
+                                <% } else { %>
+                                    <div class="user-avatar large default-avatar" id="profile-image-placeholder">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                <% } %>
+                            </div>
+                            <div class="profile-photo-actions">
+                                <button class="btn btn-secondary" id="upload-photo-btn">
+                                    <i class="fas fa-upload"></i> Upload Photo
+                                </button>
+                                <input type="file" id="profile-photo-input" accept="image/*" style="display: none;">
+                            </div>
+                        </div>
+                        
+                        <div class="profile-details">
+                            <div class="profile-detail">
+                                <span class="detail-label">Email:</span>
+                                <span class="detail-value"><%= user.email %></span>
+                            </div>
+                            <div class="profile-detail">
+                                <span class="detail-label">Role:</span>
+                                <span class="detail-value"><%= isAdmin ? 'Administrator' : 'User' %></span>
+                            </div>
+                            <div class="profile-detail">
+                                <span class="detail-label">Account Created:</span>
+                                <span class="detail-value" id="account-created"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="profile-form-card">
+                <div class="card-header">
+                    <h3>Personal Information</h3>
+                </div>
+                <div class="card-body">
+                    <form id="profile-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="firstName">First Name</label>
+                                <input type="text" id="firstName" name="firstName" placeholder="Enter your first name" 
+                                    value="<%= user.profile ? (user.profile.firstName || '') : '' %>">
+                            </div>
+                            <div class="form-group">
+                                <label for="lastName">Last Name</label>
+                                <input type="text" id="lastName" name="lastName" placeholder="Enter your last name"
+                                    value="<%= user.profile ? (user.profile.lastName || '') : '' %>">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" id="phone" name="phone" placeholder="Enter your phone number"
+                                    value="<%= user.profile ? (user.profile.phone || '') : '' %>">
+                            </div>
+                            <div class="form-group">
+                                <label for="profession">Profession</label>
+                                <select id="profession" name="profession">
+                                    <option value="">Select a profession</option>
+                                    <% professions.forEach(function(profession) { %>
+                                        <option value="<%= profession._id %>" 
+                                            <%= (user.profile && user.profile.profession && 
+                                                user.profile.profession.toString() === profession._id.toString()) ? 'selected' : '' %>>
+                                            <%= profession.name %>
+                                        </option>
+                                    <% }); %>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete profile confirmation modal template -->
+<template id="delete-profile-confirmation-template">
+    <div class="confirmation-content">
+        <div class="confirmation-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <div class="confirmation-message">
+            <h3>Delete Profile</h3>
+            <p>Are you sure you want to delete your profile? This action cannot be undone.</p>
+            <p class="warning">Note: This will only delete your profile information, not your account.</p>
+        </div>
+        <div class="confirmation-actions">
+            <button class="btn btn-secondary" id="cancel-delete-profile">Cancel</button>
+            <button class="btn btn-danger" id="confirm-delete-profile">Delete Profile</button>
+        </div>
+    </div>
+</template>
+
+<script src="/js/profile.js"></script>
+
+<%- include('layout-end') %>

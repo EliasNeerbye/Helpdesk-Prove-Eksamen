@@ -78,6 +78,9 @@ app.use("/api/category", categoryRoutes);
 app.use("/api/comment", commentRoutes);
 app.use("/api/profession", professionRoutes);
 
+const pageRoutes = require('./routes/pageRoutes');
+app.use('/', pageRoutes);
+
 app.use("/api", (req, res) => {
     return res.status(401).json({ message: "Unauthorized" });
 });

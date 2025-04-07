@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> | HelpDesk</title>
+    <link rel="stylesheet" href="/css/normalize.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Additional stylesheets can be included here -->
+    <% if (typeof extraStyles !== 'undefined') { %>
+        <% extraStyles.forEach(function(style) { %>
+            <link rel="stylesheet" href="<%= style %>">
+        <% }); %>
+    <% } %>
+</head>
+<body>
+    <% if (typeof user !== 'undefined') { %>
+        <%- include('partials/sidebar', { user: user, isAdmin: isAdmin }) %>
+        <div class="main-content">
+            <%- include('partials/header', { user: user, title: title }) %>
+            <main class="content-wrapper">
+    <% } else { %>
+        <div class="auth-container">
+    <% } %>

@@ -1,0 +1,150 @@
+<%- include('layout-start', { title: title, user: user, isAdmin: isAdmin }) %>
+
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h2>Welcome back, 
+            <% if (user.profile && user.profile.firstName) { %>
+                <%= user.profile.firstName %>
+            <% } else { %>
+                <%= user.email.split('@')[0] %>
+            <% } %>!
+        </h2>
+        <p class="date-display" id="current-date"></p>
+    </div>
+    
+    <div class="dashboard-summary">
+        <div class="summary-card">
+            <div class="summary-icon">
+                <i class="fas fa-ticket-alt"></i>
+            </div>
+            <div class="summary-info">
+                <h3>My Tickets</h3>
+                <p class="summary-count" id="my-tickets-count">Loading...</p>
+            </div>
+            <a href="/tickets" class="summary-link">View All</a>
+        </div>
+        
+        <% if (isAdmin) { %>
+            <div class="summary-card">
+                <div class="summary-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="summary-info">
+                    <h3>Open Tickets</h3>
+                    <p class="summary-count" id="open-tickets-count">Loading...</p>
+                </div>
+                <a href="/tickets?status=open" class="summary-link">View All</a>
+            </div>
+            
+            <div class="summary-card">
+                <div class="summary-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="summary-info">
+                    <h3>Total Users</h3>
+                    <p class="summary-count" id="total-users-count">Loading...</p>
+                </div>
+                <a href="/admin/users" class="summary-link">Manage</a>
+            </div>
+        <% } else { %>
+            <div class="summary-card">
+                <div class="summary-icon">
+                    <i class="fas fa-hourglass-half"></i>
+                </div>
+                <div class="summary-info">
+                    <h3>In Progress</h3>
+                    <p class="summary-count" id="in-progress-count">Loading...</p>
+                </div>
+                <a href="/tickets?status=in-progress" class="summary-link">View All</a>
+            </div>
+            
+            <div class="summary-card">
+                <div class="summary-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="summary-info">
+                    <h3>Resolved</h3>
+                    <p class="summary-count" id="resolved-count">Loading...</p>
+                </div>
+                <a href="/tickets?status=resolved" class="summary-link">View All</a>
+            </div>
+        <% } %>
+    </div>
+    
+    <div class="dashboard-sections">
+        <div class="dashboard-section">
+            <div class="section-header">
+                <h3>Recent Tickets</h3>
+                <a href="/tickets" class="section-link">See All</a>
+            </div>
+            <div class="ticket-list" id="recent-tickets">
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <p>Loading recent tickets...</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-section">
+            <div class="section-header">
+                <h3><%= isAdmin ? 'Ticket Statistics' : 'Activity Feed' %></h3>
+            </div>
+            <% if (isAdmin) { %>
+                <div class="ticket-stats" id="ticket-stats">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Loading statistics...</p>
+                    </div>
+                </div>
+            <% } else { %>
+                <div class="activity-feed" id="activity-feed">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Loading activity...</p>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<!-- Quick create ticket modal template -->
+<template id="create-ticket-template">
+    <form id="quick-ticket-form" class="modal-form">
+        <div class="form-group">
+            <label for="ticket-summary">Summary</label>
+            <input type="text" id="ticket-summary" name="summary" placeholder="Brief summary of the issue" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="ticket-description">Description</label>
+            <textarea id="ticket-description" name="description" placeholder="Detailed description of the issue" rows="5" required></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="ticket-category">Category</label>
+            <select id="ticket-category" name="category" required>
+                <option value="">Select a category</option>
+                <!-- Categories will be loaded dynamically -->
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="ticket-priority">Priority</label>
+            <select id="ticket-priority" name="priority">
+                <option value="low">Low</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">High</option>
+            </select>
+        </div>
+        
+        <div class="form-actions">
+            <button type="button" class="btn btn-secondary" id="cancel-ticket">Cancel</button>
+            <button type="submit" class="btn btn-primary">Create Ticket</button>
+        </div>
+    </form>
+</template>
+
+<script src="/js/dashboard.js"></script>
+
+<%- include('layout-end') %>

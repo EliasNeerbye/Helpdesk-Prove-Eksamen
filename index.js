@@ -50,6 +50,10 @@ app.use(cors({
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
 }))
 
+const authRoutes = require('./routes/authRoutes');
+
+app.use("/api/auth", authRoutes);
+
 app.use("/api", (req, res, next) => {
     if (!req.session.user) {
         return res.status(401).json({ message: "Unauthorized" });

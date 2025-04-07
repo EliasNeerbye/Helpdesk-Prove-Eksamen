@@ -50,6 +50,19 @@ app.use(cors({
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
 }))
 
+app.use("/api", (req, res, next) => {
+    if (!req.session.user) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+    next();
+});
+
+app.use("*", (req, res) => {
+    res.status(404).render("error", {
+        status: 404,
+        message: "Page not found",
+    });
+});
 
 app.listen(config.Port, () => {
     console.log(`Server is running on ${config.HttpType}://localhost:${config.Port}`);

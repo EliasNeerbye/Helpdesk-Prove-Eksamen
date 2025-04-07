@@ -10,15 +10,13 @@ router.use(
     })
 );
 
-router.use(sessionExists); // Middleware to check if session exists
-
 const register = require('../controllers/auth/register');
 const login = require('../controllers/auth/login');
 
 const logout = require('../controllers/auth/logout');
 
-router.post('/register', register);
-router.post('/login', login);
+router.post('/register', sessionExists, register);
+router.post('/login', sessionExists, login);
 router.post('/logout', logout);
 
 module.exports = router;

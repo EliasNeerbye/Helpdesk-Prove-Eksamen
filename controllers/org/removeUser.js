@@ -1,3 +1,5 @@
+const Organization = require("../../models/Organization");
+
 module.exports = async (req, res) => {
     const { userID } = req.params;
 

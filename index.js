@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo');
 const fileUpload = require('express-fileupload');
 const path = require('path');
+const fs = require('fs');
 const cors = require('cors');
 
 const config = require('./util/config');
@@ -15,11 +16,22 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+const uploadDir = path.join(__dirname, 'public/assets/uploads');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+
 app.use(fileUpload({
-    limits: { fileSize: 50 * 1024 * 1024 }, // 50 MB
     createParentPath: true,
+    limits: { 
+        fileSize: 50 * 1024 * 1024 // 50MB limit
+    },
     abortOnLimit: true,
+    useTempFiles: true,
+    tempFileDir: path.join(__dirname, 'public/assets/uploads/temp'),
     safeFileNames: true,
+    preserveExtension: true,
+    debug: process.env.NODE_ENV === 'development'
 }));
 
 mongoose.connect(config.MongoURI).then(() => {
@@ -57,8 +69,6 @@ app.use("/api/auth", authRoutes);
 app.use("/api/org", orgRoutes);
 
 app.use("/api", (req, res) => {
-    console.warn("Unauthorized access attempt to API without a spesific page.");
-    console.warn("Request details:", req.method, req.url, req.headers, req.body);
     return res.status(401).json({ message: "Unauthorized" });
 });
 

@@ -21,6 +21,10 @@ module.exports = async (req, res) => {
         return res.status(400).json({ message: "Name must be between 3 and 50 characters" });
     }
 
+    if (description && description.length > 200) {
+        return res.status(400).json({ message: "Description must be less than 200 characters" });
+    }
+
     try {
         const exists = await Organization.findOne({ name });
         if (exists) {

@@ -1,4 +1,5 @@
 const User = require('../../models/User');
+const Organization = require('../../models/Organization');
 
 module.exports = async (req, res) => {
     const { email } = req.body;

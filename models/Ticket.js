@@ -7,6 +7,11 @@ const TicketSchema = new Schema({
         ref: 'User',
         required: true,
     },
+    organization: {
+        type: Schema.Types.ObjectId,
+        ref: 'Organization',
+        required: true,
+    },
     summary: {
         type: String,
     },

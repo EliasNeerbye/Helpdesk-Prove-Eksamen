@@ -1,5 +1,6 @@
 const Profile = require('../../models/Profile');
 const User = require('../../models/User');
+const Profession = require('../../models/Profession');
 
 module.exports = async (req, res) => {
     const { firstName, lastName, phone, profession } = req.body;
@@ -15,12 +16,22 @@ module.exports = async (req, res) => {
             return res.status(400).json({ message: 'User already has a profile' });
         }
 
+        // Validate profession if provided
+        let professionId = null;
+        if (profession) {
+            const professionExists = await Profession.findById(profession);
+            if (!professionExists) {
+                return res.status(404).json({ message: 'Profession not found' });
+            }
+            professionId = profession;
+        }
+
         // Create new profile
         const newProfile = new Profile({
             firstName,
             lastName,
             phone,
-            profession: profession || null
+            profession: professionId
         });
 
         await newProfile.save();

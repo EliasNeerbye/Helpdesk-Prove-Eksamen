@@ -1,4 +1,5 @@
 const Profile = require('../../models/Profile');
+const Profession = require('../../models/Profession');
 const fs = require('fs').promises;
 const path = require('path');
 
@@ -15,7 +16,15 @@ module.exports = async (req, res) => {
         if (firstName) updateFields.firstName = firstName;
         if (lastName) updateFields.lastName = lastName;
         if (phone) updateFields.phone = phone;
-        if (profession) updateFields.profession = profession;
+        
+        // Validate profession if provided
+        if (profession) {
+            const professionExists = await Profession.findById(profession);
+            if (!professionExists) {
+                return res.status(404).json({ message: 'Profession not found' });
+            }
+            updateFields.profession = profession;
+        }
 
         // Handle profile picture upload
         if (req.file) {
@@ -53,7 +62,7 @@ module.exports = async (req, res) => {
             req.user.profile,
             updateFields,
             { new: true }
-        );
+        ).populate('profession');
 
         if (!updatedProfile) {
             return res.status(404).json({ message: 'Profile not found' });

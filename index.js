@@ -51,14 +51,15 @@ app.use(cors({
 }))
 
 const authRoutes = require('./routes/authRoutes');
+const orgRoutes = require('./routes/orgRoutes');
 
 app.use("/api/auth", authRoutes);
+app.use("/api/org", orgRoutes);
 
-app.use("/api", (req, res, next) => {
-    if (!req.session.user) {
-        return res.status(401).json({ message: "Unauthorized" });
-    }
-    next();
+app.use("/api", (req, res) => {
+    console.warn("Unauthorized access attempt to API without a spesific page.");
+    console.warn("Request details:", req.method, req.url, req.headers, req.body);
+    return res.status(401).json({ message: "Unauthorized" });
 });
 
 app.use((req, res) => {

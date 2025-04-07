@@ -64,9 +64,11 @@ app.use(cors({
 
 const authRoutes = require('./routes/authRoutes');
 const orgRoutes = require('./routes/orgRoutes');
+const profileRoutes = require('./routes/profileRoutes');
 
 app.use("/api/auth", authRoutes);
 app.use("/api/org", orgRoutes);
+app.use("/api/profile", profileRoutes);
 
 app.use("/api", (req, res) => {
     return res.status(401).json({ message: "Unauthorized" });

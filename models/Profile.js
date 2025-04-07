@@ -9,7 +9,7 @@ const ProfileSchema = new Schema({
         type: String,
     },
     phone: {
-        type: Number,
+        type: String,
         unique: true,
     },
     pfp: {

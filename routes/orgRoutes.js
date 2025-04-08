@@ -1,7 +1,7 @@
 const router = require('express').Router();
 
 const getUser = require('../middleware/getUser');
-const isAdmin = require('../middleware/isAdmin');
+const isOrgAdmin = require('../middleware/isOrgAdmin');
 
 router.use(getUser);
 
@@ -9,15 +9,13 @@ const createOrg = require('../controllers/org/createOrg');
 const addUser = require('../controllers/org/addUser');
 const removeUser = require('../controllers/org/removeUser');
 const getUsers = require('../controllers/org/getUsers');
+const toggleOrgAdmin = require('../controllers/org/toggleOrgAdmin');
 
-// Allow any user to create an organization without requiring isAdmin
 router.post('/create', createOrg);
 router.get('/users', getUsers);
 
-// Apply isAdmin middleware to the remaining routes
-router.use(isAdmin);
-
-router.put('/user', addUser);
-router.delete('/user/:userID', removeUser);
+router.put('/user', isOrgAdmin, addUser);
+router.delete('/user/:userID', isOrgAdmin, removeUser);
+router.post('/toggle-admin', isOrgAdmin, toggleOrgAdmin);
 
 module.exports = router;

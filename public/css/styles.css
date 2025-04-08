@@ -316,6 +316,51 @@ img {
     color: var(--text-muted);
 }
 
+.user-actions {
+    display: flex;
+    gap: var(--space-xs);
+}
+
+.toggle-admin.btn-warning {
+    background-color: var(--warning-color);
+    color: var(--darker-gray);
+}
+
+.toggle-admin.btn-warning:hover {
+    background-color: #FFA000;
+}
+
+/* Role styling */
+.user-role {
+    font-weight: 600;
+}
+
+.user-role.system-admin {
+    color: var(--danger-color);
+}
+
+.user-role.main-admin {
+    color: var(--primary-dark);
+}
+
+.user-role.org-admin {
+    color: var(--info-color);
+}
+
+/* User name placeholder styling */
+.user-name-placeholder {
+    color: var(--primary-color);
+}
+
+/* Icon colors */
+.confirmation-icon .fa-user-shield {
+    color: var(--info-color);
+}
+
+.confirmation-icon .fa-user {
+    color: var(--warning-color);
+}
+
 .profile-link {
     display: flex;
     align-items: center;

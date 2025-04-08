@@ -160,6 +160,60 @@
     </form>
 </template>
 
+<!-- Admin Create Ticket For User modal template -->
+<template id="create-ticket-for-user-template">
+    <form id="ticket-for-user-form" class="modal-form">
+        <div class="form-group">
+            <label for="user-select">Select User</label>
+            <select id="user-select" name="userId" required>
+                <option value="">Select a user</option>
+                <!-- Users will be loaded dynamically -->
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="ticket-user-summary">Summary</label>
+            <input type="text" id="ticket-user-summary" name="summary" placeholder="Brief summary of the issue" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="ticket-user-description">Description</label>
+            <textarea id="ticket-user-description" name="description" placeholder="Detailed description of the issue" rows="5" required></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="ticket-user-category">Category</label>
+            <select id="ticket-user-category" name="category" required>
+                <option value="">Select a category</option>
+                <!-- Categories will be loaded dynamically -->
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="ticket-user-priority">Priority</label>
+            <select id="ticket-user-priority" name="priority">
+                <option value="low">Low</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">High</option>
+            </select>
+        </div>
+        
+        <div class="form-actions">
+            <button type="button" class="btn btn-secondary" id="cancel-ticket-for-user">Cancel</button>
+            <button type="submit" class="btn btn-primary">Create Ticket</button>
+        </div>
+    </form>
+</template>
+
+<% if (isAdmin) { %>
+    <button class="btn btn-secondary" id="create-for-user-btn">
+        <i class="fas fa-user-plus"></i> Create for User
+    </button>
+<% } %>
+<% if (isAdmin) { %>
+    <script src="/js/admin/create-ticket-for-user.js"></script>
+<% } %>
+
 <script src="/js/tickets.js"></script>
 
 <%- include('layout-end') %>

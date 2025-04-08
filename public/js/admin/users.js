@@ -1,11 +1,9 @@
-/**
- * Users management functionality for admin panel
- */
 document.addEventListener('DOMContentLoaded', () => {
     const usersList = document.getElementById('users-body');
     const loadingSpinner = document.getElementById('users-loading');
     const usersContainer = document.getElementById('users-list');
     const addUserBtn = document.getElementById('add-user-btn');
+    let currentUserIsAdmin = false;
     
     // Fetch and render users
     function fetchUsers() {
@@ -17,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(data => {
                 if (data.users && Array.isArray(data.users)) {
                     usersList.innerHTML = '';
+                    currentUserIsAdmin = data.currentUserIsAdmin;
                     data.users.forEach(renderUserRow);
                 }
                 loadingSpinner.style.display = 'none';
@@ -37,17 +36,139 @@ document.addEventListener('DOMContentLoaded', () => {
         row.querySelector('.user-email').textContent = user.email;
         row.querySelector('.user-name').textContent = user.profile ? 
             `${user.profile.firstName} ${user.profile.lastName}` : 'No profile';
-        row.querySelector('.user-role').textContent = user.role;
+        
+        // Show system role and organization admin status
+        const roleCell = row.querySelector('.user-role');
+        if (user.role === 'admin') {
+            roleCell.textContent = 'System Admin';
+            roleCell.classList.add('system-admin');
+        } else {
+            roleCell.textContent = user.isMainAdmin ? 
+                'Organization Owner' : 
+                (user.isOrgAdmin ? 'Organization Admin' : 'User');
+            
+            if (user.isMainAdmin) {
+                roleCell.classList.add('main-admin');
+            } else if (user.isOrgAdmin) {
+                roleCell.classList.add('org-admin');
+            }
+        }
+        
         row.querySelector('.user-profession').textContent = user.profile?.profession?.name || 'Not set';
         row.querySelector('.user-status').textContent = user.profile ? 'Active' : 'Incomplete';
         
+        // Get action buttons
         const deleteBtn = row.querySelector('.delete-user');
+        const toggleAdminBtn = row.querySelector('.toggle-admin');
         
-        deleteBtn.addEventListener('click', () => openDeleteUserConfirmation(user));
+        // Only show toggle button if user is not the main admin or system admin
+        // and the current user has admin privileges
+        if (toggleAdminBtn) {
+            if (user.isMainAdmin || user.role === 'admin' || !currentUserIsAdmin) {
+                toggleAdminBtn.style.display = 'none';
+            } else {
+                // Set button text and icon based on current admin status
+                if (user.isOrgAdmin) {
+                    toggleAdminBtn.innerHTML = '<i class="fas fa-user"></i>';
+                    toggleAdminBtn.classList.remove('btn-primary');
+                    toggleAdminBtn.classList.add('btn-warning');
+                    toggleAdminBtn.title = 'Demote to Regular User';
+                } else {
+                    toggleAdminBtn.innerHTML = '<i class="fas fa-user-shield"></i>';
+                    toggleAdminBtn.classList.remove('btn-warning');
+                    toggleAdminBtn.classList.add('btn-primary');
+                    toggleAdminBtn.title = 'Promote to Admin';
+                }
+                
+                toggleAdminBtn.addEventListener('click', () => {
+                    const action = user.isOrgAdmin ? 'demote' : 'promote';
+                    openToggleAdminConfirmation(user, action);
+                });
+            }
+        }
+        
+        // Only allow deletion if user is not the main admin and not the current user
+        if (deleteBtn) {
+            if (user.isMainAdmin || user._id === document.querySelector('meta[name="user-id"]')?.content) {
+                deleteBtn.style.display = 'none';
+            } else {
+                deleteBtn.addEventListener('click', () => openDeleteUserConfirmation(user));
+            }
+        }
         
         usersList.appendChild(row);
     }
 
+    // Open toggle admin confirmation
+    function openToggleAdminConfirmation(user, action) {
+        const template = document.getElementById('toggle-admin-confirmation-template');
+        const isPromote = action === 'promote';
+        
+        document.getElementById('modal-title').textContent = isPromote ? 'Promote User' : 'Demote User';
+        
+        const modalContent = template.content.cloneNode(true);
+        
+        // Update content based on action
+        const iconEl = modalContent.querySelector('.confirmation-icon i');
+        iconEl.className = isPromote ? 'fas fa-user-shield' : 'fas fa-user';
+        
+        const titleEl = modalContent.querySelector('h3');
+        titleEl.textContent = isPromote ? 'Promote User to Admin' : 'Demote from Admin';
+        
+        // Update user name in confirmation message
+        const userName = user.profile ? 
+            `${user.profile.firstName} ${user.profile.lastName}` : user.email;
+        
+        const messageEl = modalContent.querySelector('.confirmation-message p:first-of-type');
+        messageEl.innerHTML = isPromote ? 
+            `Are you sure you want to promote <strong class="user-name-placeholder">${userName}</strong> to organization admin?` :
+            `Are you sure you want to demote <strong class="user-name-placeholder">${userName}</strong> from organization admin?`;
+        
+        const descriptionEl = modalContent.querySelector('.confirmation-message p:last-of-type');
+        descriptionEl.textContent = isPromote ?
+            "This will give them administrative access to manage tickets, users, and organization settings." :
+            "This will remove their administrative access to manage tickets, users, and organization settings.";
+        
+        // Update button
+        const confirmBtn = modalContent.querySelector('#confirm-toggle-admin');
+        confirmBtn.textContent = isPromote ? 'Promote to Admin' : 'Demote from Admin';
+        confirmBtn.className = isPromote ? 'btn btn-primary' : 'btn btn-warning';
+        
+        document.getElementById('modal-body').innerHTML = '';
+        document.getElementById('modal-body').appendChild(modalContent);
+        
+        openModal();
+        
+        document.getElementById('cancel-toggle-admin').addEventListener('click', closeModal);
+        document.getElementById('confirm-toggle-admin').addEventListener('click', () => {
+            toggleAdminStatus(user._id);
+        });
+    }
+    
+    // Toggle user's admin status
+    function toggleAdminStatus(userId) {
+        fetch('/api/org/toggle-admin', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ userId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                closeModal();
+                showToast('success', 'Success', data.message);
+                fetchUsers(); // Refresh the list
+            } else {
+                showToast('error', 'Error', data.message || 'Failed to update user status');
+            }
+        })
+        .catch(error => {
+            console.error('Error toggling admin status:', error);
+            showToast('error', 'Error', 'Failed to update user status. Please try again later.');
+        });
+    }
 
     // Open delete user confirmation
     function openDeleteUserConfirmation(user) {
@@ -63,29 +184,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('cancel-delete-user').addEventListener('click', closeModal);
         document.getElementById('confirm-delete-user').addEventListener('click', () => {
             removeUser(user._id);
-        });
-    }
-
-    // Update user
-    function updateUser(userId, data) {
-        fetch(`/api/org/user/${userId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.message) {
-                closeModal();
-                fetchUsers();
-                showToast('success', 'Success', 'User updated successfully');
-            }
-        })
-        .catch(error => {
-            console.error('Error updating user:', error);
-            showToast('error', 'Error', 'Failed to update user. Please try again later.');
         });
     }
 

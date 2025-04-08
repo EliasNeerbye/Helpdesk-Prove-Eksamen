@@ -1,5 +1,7 @@
 <%- include('../layout-start', { title: 'Manage Users', user: user, isAdmin: isAdmin }) %>
 
+<meta name="user-id" content="<%= user._id %>">
+
 <div class="admin-container">
     <div class="admin-header">
         <h2>Manage Users</h2>
@@ -45,7 +47,10 @@
         <td class="user-profession"></td>
         <td class="user-status"></td>
         <td class="user-actions">
-            <button class="btn btn-sm btn-danger delete-user">
+            <button class="btn btn-sm btn-primary toggle-admin" title="Toggle Admin Status">
+                <i class="fas fa-user-shield"></i>
+            </button>
+            <button class="btn btn-sm btn-danger delete-user" title="Remove User">
                 <i class="fas fa-trash"></i>
             </button>
         </td>
@@ -80,6 +85,24 @@
         <div class="confirmation-actions">
             <button class="btn btn-secondary" id="cancel-delete-user">Cancel</button>
             <button class="btn btn-danger" id="confirm-delete-user">Delete</button>
+        </div>
+    </div>
+</template>
+
+<!-- Toggle admin confirmation modal template -->
+<template id="toggle-admin-confirmation-template">
+    <div class="confirmation-content">
+        <div class="confirmation-icon">
+            <i class="fas fa-user-shield"></i>
+        </div>
+        <div class="confirmation-message">
+            <h3>Toggle Admin Status</h3>
+            <p>Are you sure you want to change admin status for this user?</p>
+            <p>This will affect their permissions within the organization.</p>
+        </div>
+        <div class="confirmation-actions">
+            <button class="btn btn-secondary" id="cancel-toggle-admin">Cancel</button>
+            <button class="btn btn-primary" id="confirm-toggle-admin">Change Status</button>
         </div>
     </div>
 </template>

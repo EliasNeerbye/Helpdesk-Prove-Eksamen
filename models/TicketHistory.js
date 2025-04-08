@@ -14,7 +14,7 @@ const TicketHistorySchema = new Schema({
     },
     action: {
         type: String,
-        enum: ['created', 'updated', 'status_changed', 'priority_changed', 'commented'],
+        enum: ['created', 'updated', 'status_changed', 'priority_changed', 'commented', 'created_by_admin'],
         required: true
     },
     prevValue: {

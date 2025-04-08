@@ -57,10 +57,19 @@ app.use(session({
     },
 }));
 
-app.use(cors({
-    origin: config.FrontendURL,
+const corsOptions = {
+    origin: function (origin, callback) {
+        if (!origin || config.AllowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-}))
+};
+
+app.use(cors(corsOptions));
+
 
 const authRoutes = require('./routes/authRoutes');
 const orgRoutes = require('./routes/orgRoutes');

@@ -144,6 +144,7 @@ SESSION_SECRET=$SESSION_SECRET
 # HTTP Configuration
 HTTP_TYPE=http
 PORT=3000
+FRONTEND_URL=http://$SERVER_IP
 EOL
 
 # Install dependencies

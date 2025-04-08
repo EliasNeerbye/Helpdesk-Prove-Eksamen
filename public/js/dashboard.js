@@ -6,7 +6,9 @@ document.addEventListener('DOMContentLoaded', function() {
     checkPrerequisites().then(({ inOrganization, hasProfile }) => {
         if (!inOrganization) {
             showOrganizationRequiredMessage();
-            return;
+            showCreateOrgButton();
+        } else {
+            hideCreateOrgButton();
         }
         
         // Load dashboard components
@@ -21,82 +23,102 @@ document.addEventListener('DOMContentLoaded', function() {
             loadActivityFeed();
         }
     });
+});
 
-    // Set up the create organization modal
-    const openCreateOrgModalBtn = document.getElementById('open-create-org-modal');
-    if (openCreateOrgModalBtn) {
-        openCreateOrgModalBtn.addEventListener('click', function() {
-            // Set the modal title
-            document.getElementById('modal-title').textContent = 'Create Organization';
-            
-            // Create the modal content
-            const modalBody = document.getElementById('modal-body');
-            modalBody.innerHTML = `
-                <form id="create-org-form" class="modal-form">
-                    <div class="form-group">
-                        <label for="org-name">Organization Name</label>
-                        <input type="text" id="org-name" name="name" placeholder="Enter organization name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="org-description">Description</label>
-                        <textarea id="org-description" name="description" placeholder="Enter organization description" rows="3"></textarea>
-                    </div>
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" id="cancel-create-org">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Create Organization</button>
-                    </div>
-                </form>
-            `;
-            
-            // Show the modal
-            openModal();
-            
-            // Handle cancel button
-            document.getElementById('cancel-create-org').addEventListener('click', closeModal);
-            
-            // Handle form submission
-            const form = document.getElementById('create-org-form');
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
+/**
+ * Shows the create organization button
+ */
+function showCreateOrgButton() {
+    const createOrgSection = document.querySelector('.create-org-section');
+    if (createOrgSection) {
+        createOrgSection.style.display = 'block';
+        
+        // Set up the create organization modal
+        const openCreateOrgModalBtn = document.getElementById('open-create-org-modal');
+        if (openCreateOrgModalBtn) {
+            openCreateOrgModalBtn.addEventListener('click', function() {
+                // Set the modal title
+                document.getElementById('modal-title').textContent = 'Create Organization';
                 
-                const formData = new FormData(form);
-                const data = {
-                    name: formData.get('name'),
-                    description: formData.get('description')
-                };
+                // Create the modal content
+                const modalBody = document.getElementById('modal-body');
+                modalBody.innerHTML = `
+                    <form id="create-org-form" class="modal-form">
+                        <div class="form-group">
+                            <label for="org-name">Organization Name</label>
+                            <input type="text" id="org-name" name="name" placeholder="Enter organization name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="org-description">Description</label>
+                            <textarea id="org-description" name="description" placeholder="Enter organization description" rows="3"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" id="cancel-create-org">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Create Organization</button>
+                        </div>
+                    </form>
+                `;
                 
-                fetch('/api/org/create', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.message === 'Organization created successfully') {
-                        // Close modal
-                        closeModal();
-                        
-                        // Show success message
-                        showToast('success', 'Success', 'Organization created successfully');
-                        
-                        // Reload page after short delay
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 1500);
-                    } else {
-                        showToast('error', 'Error', data.message || 'Failed to create organization');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error creating organization:', error);
-                    showToast('error', 'Error', 'Failed to create organization. Please try again.');
+                // Show the modal
+                openModal();
+                
+                // Handle cancel button
+                document.getElementById('cancel-create-org').addEventListener('click', closeModal);
+                
+                // Handle form submission
+                const form = document.getElementById('create-org-form');
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(form);
+                    const data = {
+                        name: formData.get('name'),
+                        description: formData.get('description')
+                    };
+                    
+                    fetch('/api/org/create', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.message === 'Organization created successfully') {
+                            // Close modal
+                            closeModal();
+                            
+                            // Show success message
+                            showToast('success', 'Success', 'Organization created successfully');
+                            
+                            // Reload page after short delay
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1500);
+                        } else {
+                            showToast('error', 'Error', data.message || 'Failed to create organization');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error creating organization:', error);
+                        showToast('error', 'Error', 'Failed to create organization. Please try again.');
+                    });
                 });
             });
-        });
+        }
     }
-});
+}
+
+/**
+ * Hides the create organization button
+ */
+function hideCreateOrgButton() {
+    const createOrgSection = document.querySelector('.create-org-section');
+    if (createOrgSection) {
+        createOrgSection.style.display = 'none';
+    }
+}
 
 /**
  * Checks if prerequisites are met (organization and profile)

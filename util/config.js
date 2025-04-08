@@ -19,6 +19,4 @@ const config = {
     Port,
 }
 
-console.log("Config Loaded", config);
-
 module.exports = config;

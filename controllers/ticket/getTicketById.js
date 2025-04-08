@@ -24,7 +24,6 @@ module.exports = async (req, res) => {
         })
             .populate('user', 'email')
             .populate('category', 'name');
-        console.log(ticket);
         if (!ticket) {
             return res.status(404).json({ message: 'Ticket not found or not accessible' });
         }

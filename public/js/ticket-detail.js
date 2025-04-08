@@ -1,24 +1,12 @@
-/**
- * Ticket detail page functionality
- */
 document.addEventListener('DOMContentLoaded', function() {
-    // Get ticket ID from URL
     const path = window.location.pathname;
     const ticketId = path.split('/').pop();
     
-    // Load ticket details
     loadTicketDetails(ticketId);
-    
-    // Set up event listeners
     setupEventListeners(ticketId);
 });
 
-/**
- * Sets up event listeners
- * @param {string} ticketId - The ticket ID
- */
 function setupEventListeners(ticketId) {
-    // Status change handler
     const statusSelect = document.getElementById('ticket-status');
     if (statusSelect) {
         statusSelect.addEventListener('change', function() {
@@ -26,7 +14,6 @@ function setupEventListeners(ticketId) {
         });
     }
     
-    // Priority change handler
     const prioritySelect = document.getElementById('ticket-priority');
     if (prioritySelect) {
         prioritySelect.addEventListener('change', function() {
@@ -34,7 +21,6 @@ function setupEventListeners(ticketId) {
         });
     }
     
-    // Delete ticket button
     const deleteButton = document.getElementById('delete-ticket-btn');
     if (deleteButton) {
         deleteButton.addEventListener('click', function() {
@@ -42,7 +28,6 @@ function setupEventListeners(ticketId) {
         });
     }
     
-    // Comment form
     const commentForm = document.getElementById('add-comment-form');
     if (commentForm) {
         commentForm.addEventListener('submit', function(e) {
@@ -52,10 +37,6 @@ function setupEventListeners(ticketId) {
     }
 }
 
-/**
- * Loads ticket details
- * @param {string} ticketId - The ticket ID
- */
 function loadTicketDetails(ticketId) {
     fetch(`/api/ticket/${ticketId}`)
         .then(response => response.json())
@@ -63,19 +44,20 @@ function loadTicketDetails(ticketId) {
             if (data.ticket) {
                 renderTicketDetails(data.ticket);
                 
-                // Render comments if available
                 if (data.comments) {
                     renderComments(data.comments);
                 }
                 
-                // Hide loading, show content
                 document.getElementById('ticket-loading').style.display = 'none';
                 document.getElementById('ticket-info').style.display = 'block';
                 
-                // Load ticket history
                 loadTicketHistory(ticketId);
+                
+                // Start polling after initial load is complete
+                if (typeof startPolling === 'function') {
+                    startPolling(ticketId);
+                }
             } else {
-                // Show error message
                 document.getElementById('ticket-loading').innerHTML = `
                     <div class="error-message">
                         <p>Failed to load ticket. It may have been deleted or you don't have permission to view it.</p>
@@ -95,37 +77,22 @@ function loadTicketDetails(ticketId) {
         });
 }
 
-/**
- * Renders ticket details
- * @param {Object} ticket - The ticket object
- */
 function renderTicketDetails(ticket) {
-    // Set page title
     document.getElementById('ticket-title').textContent = ticket.summary;
-    
-    // Set category
     document.getElementById('ticket-category').textContent = ticket.category.name;
-    
-    // Set created date
     document.getElementById('ticket-created').textContent = formatDate(ticket.createdAt, true);
     
-    // Set status badge
     const statusBadge = document.getElementById('ticket-status-badge');
     statusBadge.textContent = formatStatus(ticket.status);
     statusBadge.dataset.status = ticket.status;
     
-    // Set priority badge
     const priorityBadge = document.getElementById('ticket-priority-badge');
     priorityBadge.textContent = ticket.priority;
     priorityBadge.dataset.priority = ticket.priority;
     
-    // Set submitted by
     document.getElementById('ticket-submitted-by').textContent = ticket.user.email;
-    
-    // Set description
     document.getElementById('ticket-description').textContent = ticket.description;
     
-    // Set dropdown values
     const statusSelect = document.getElementById('ticket-status');
     if (statusSelect) {
         statusSelect.value = ticket.status;
@@ -137,10 +104,72 @@ function renderTicketDetails(ticket) {
     }
 }
 
-/**
- * Renders comments
- * @param {Array} comments - Array of comment objects
- */
+function updateTicket(ticketId, updateData) {
+    fetch(`/api/ticket/${ticketId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updateData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message === 'Ticket updated successfully') {
+            showToast('success', 'Updated', 'Ticket updated successfully');
+            renderTicketDetails(data.ticket);
+            loadTicketHistory(ticketId);
+            updateDataStates();
+        } else {
+            showToast('error', 'Error', data.message || 'Failed to update ticket');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('error', 'Error', 'Failed to update ticket');
+    });
+}
+
+function addComment(ticketId) {
+    const content = document.getElementById('comment-content').value;
+    
+    if (!content.trim()) {
+        showToast('error', 'Error', 'Comment cannot be empty');
+        return;
+    }
+    
+    fetch(`/api/comment/${ticketId}/add`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ content })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message === 'Comment added successfully') {
+            document.getElementById('comment-content').value = '';
+            showToast('success', 'Added', 'Comment added successfully');
+            
+            fetch(`/api/comment/${ticketId}/list`)
+                .then(response => response.json())
+                .then(commentData => {
+                    if (commentData.comments) {
+                        renderComments(commentData.comments);
+                        updateDataStates();
+                    }
+                });
+            
+            loadTicketHistory(ticketId);
+        } else {
+            showToast('error', 'Error', data.message || 'Failed to add comment');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('error', 'Error', 'Failed to add comment');
+    });
+}
+
 function renderComments(comments) {
     const commentsContainer = document.getElementById('comments-container');
     commentsContainer.innerHTML = '';
@@ -156,23 +185,15 @@ function renderComments(comments) {
         return;
     }
     
-    // Get comment template
     const commentTemplate = document.getElementById('comment-template');
     
-    // Add each comment
     comments.forEach(comment => {
         const commentElement = commentTemplate.content.cloneNode(true);
         
-        // Set author name
         commentElement.querySelector('.author-name').textContent = comment.user.email;
-        
-        // Set date
         commentElement.querySelector('.comment-date').textContent = formatDate(comment.createdAt, true);
-        
-        // Set content
         commentElement.querySelector('.comment-content').textContent = comment.content;
         
-        // Add attachments if any
         const attachmentsContainer = commentElement.querySelector('.comment-attachments');
         if (comment.attachments && comment.attachments.length > 0) {
             comment.attachments.forEach(attachment => {
@@ -192,12 +213,10 @@ function renderComments(comments) {
         
         commentsContainer.appendChild(commentElement);
     });
+    
+    lastCommentCount = comments.length;
 }
 
-/**
- * Loads ticket history
- * @param {string} ticketId - The ticket ID
- */
 function loadTicketHistory(ticketId) {
     const historyContainer = document.getElementById('history-container');
     
@@ -205,58 +224,7 @@ function loadTicketHistory(ticketId) {
         .then(response => response.json())
         .then(data => {
             if (data.history && data.history.length > 0) {
-                historyContainer.innerHTML = '';
-                
-                // Get history item template
-                const historyTemplate = document.getElementById('history-item-template');
-                
-                // Add each history item
-                data.history.forEach(item => {
-                    const historyElement = historyTemplate.content.cloneNode(true);
-                    
-                    // Set icon based on action
-                    const iconElement = historyElement.querySelector('.history-icon i');
-                    switch(item.action) {
-                        case 'created':
-                            iconElement.className = 'fas fa-plus-circle';
-                            break;
-                        case 'status_changed':
-                            iconElement.className = 'fas fa-sync-alt';
-                            break;
-                        case 'priority_changed':
-                            iconElement.className = 'fas fa-flag';
-                            break;
-                        case 'commented':
-                            iconElement.className = 'fas fa-comment';
-                            break;
-                        default:
-                            iconElement.className = 'fas fa-history';
-                    }
-                    
-                    // Set history text
-                    const historyText = historyElement.querySelector('.history-text');
-                    switch(item.action) {
-                        case 'created':
-                            historyText.textContent = `${item.user.email} created this ticket`;
-                            break;
-                        case 'status_changed':
-                            historyText.textContent = `${item.user.email} changed status from "${formatStatus(item.prevValue)}" to "${formatStatus(item.newValue)}"`;
-                            break;
-                        case 'priority_changed':
-                            historyText.textContent = `${item.user.email} changed priority from "${item.prevValue}" to "${item.newValue}"`;
-                            break;
-                        case 'commented':
-                            historyText.textContent = `${item.user.email} added a comment`;
-                            break;
-                        default:
-                            historyText.textContent = `${item.user.email} updated the ticket`;
-                    }
-                    
-                    // Set date
-                    historyElement.querySelector('.history-date').textContent = timeAgo(item.createdAt);
-                    
-                    historyContainer.appendChild(historyElement);
-                });
+                renderHistory(data.history);
             } else {
                 historyContainer.innerHTML = `
                     <div class="empty-state small">
@@ -277,72 +245,77 @@ function loadTicketHistory(ticketId) {
         });
 }
 
-/**
- * Updates a ticket
- * @param {string} ticketId - The ticket ID
- * @param {Object} updateData - Data to update
- */
-function updateTicket(ticketId, updateData) {
-    fetch(`/api/ticket/${ticketId}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(updateData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.message === 'Ticket updated successfully') {
-            // Show success message
-            showToast('success', 'Updated', 'Ticket updated successfully');
-            
-            // Update ticket details
-            renderTicketDetails(data.ticket);
-            
-            // Reload history
-            loadTicketHistory(ticketId);
-        } else {
-            showToast('error', 'Error', data.message || 'Failed to update ticket');
+function renderHistory(history) {
+    const historyContainer = document.getElementById('history-container');
+    historyContainer.innerHTML = '';
+    
+    const historyTemplate = document.getElementById('history-item-template');
+    
+    history.forEach(item => {
+        const historyElement = historyTemplate.content.cloneNode(true);
+        
+        const iconElement = historyElement.querySelector('.history-icon i');
+        switch(item.action) {
+            case 'created':
+                iconElement.className = 'fas fa-plus-circle';
+                break;
+            case 'status_changed':
+                iconElement.className = 'fas fa-sync-alt';
+                break;
+            case 'priority_changed':
+                iconElement.className = 'fas fa-flag';
+                break;
+            case 'commented':
+                iconElement.className = 'fas fa-comment';
+                break;
+            default:
+                iconElement.className = 'fas fa-history';
         }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showToast('error', 'Error', 'Failed to update ticket');
+        
+        const historyText = historyElement.querySelector('.history-text');
+        switch(item.action) {
+            case 'created':
+                historyText.textContent = `${item.user.email} created this ticket`;
+                break;
+            case 'status_changed':
+                historyText.textContent = `${item.user.email} changed status from "${formatStatus(item.prevValue)}" to "${formatStatus(item.newValue)}"`;
+                break;
+            case 'priority_changed':
+                historyText.textContent = `${item.user.email} changed priority from "${item.prevValue}" to "${item.newValue}"`;
+                break;
+            case 'commented':
+                historyText.textContent = `${item.user.email} added a comment`;
+                break;
+            default:
+                historyText.textContent = `${item.user.email} updated the ticket`;
+        }
+        
+        historyElement.querySelector('.history-date').textContent = timeAgo(item.createdAt);
+        
+        historyContainer.appendChild(historyElement);
     });
+    
+    lastHistoryCount = history.length;
 }
 
-/**
- * Opens modal to confirm ticket deletion
- * @param {string} ticketId - The ticket ID
- */
 function openDeleteConfirmation(ticketId) {
-    // Get template
     const template = document.getElementById('delete-confirmation-template');
     
-    // Set modal title
     document.getElementById('modal-title').textContent = 'Confirm Delete';
     
-    // Clone template content
     const modalContent = template.content.cloneNode(true);
     
-    // Add to modal body
     document.getElementById('modal-body').innerHTML = '';
     document.getElementById('modal-body').appendChild(modalContent);
     
-    // Show modal
     openModal();
     
-    // Add event listeners
     document.getElementById('cancel-delete').addEventListener('click', closeModal);
     document.getElementById('confirm-delete').addEventListener('click', function() {
         deleteTicket(ticketId);
     });
 }
 
-/**
- * Deletes a ticket
- * @param {string} ticketId - The ticket ID
- */
 function deleteTicket(ticketId) {
     fetch(`/api/ticket/${ticketId}`, {
         method: 'DELETE',
@@ -353,13 +326,8 @@ function deleteTicket(ticketId) {
     .then(response => response.json())
     .then(data => {
         if (data.message === 'Ticket deleted successfully') {
-            // Close modal
             closeModal();
-            
-            // Show success message
             showToast('success', 'Deleted', 'Ticket deleted successfully');
-            
-            // Redirect to tickets list
             setTimeout(() => {
                 window.location.href = '/tickets';
             }, 1000);
@@ -373,60 +341,6 @@ function deleteTicket(ticketId) {
     });
 }
 
-/**
- * Adds a comment to the ticket
- * @param {string} ticketId - The ticket ID
- */
-function addComment(ticketId) {
-    const content = document.getElementById('comment-content').value;
-    
-    if (!content.trim()) {
-        showToast('error', 'Error', 'Comment cannot be empty');
-        return;
-    }
-    
-    fetch(`/api/comment/${ticketId}/add`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ content })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.message === 'Comment added successfully') {
-            // Clear form
-            document.getElementById('comment-content').value = '';
-            
-            // Show success message
-            showToast('success', 'Added', 'Comment added successfully');
-            
-            // Reload comments
-            fetch(`/api/comment/${ticketId}/list`)
-                .then(response => response.json())
-                .then(commentData => {
-                    if (commentData.comments) {
-                        renderComments(commentData.comments);
-                    }
-                });
-            
-            // Reload history
-            loadTicketHistory(ticketId);
-        } else {
-            showToast('error', 'Error', data.message || 'Failed to add comment');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showToast('error', 'Error', 'Failed to add comment');
-    });
-}
-
-/**
- * Formats a status string for display
- * @param {string} status - The status to format
- * @returns {string} Formatted status
- */
 function formatStatus(status) {
     return status.split('-').map(word => 
         word.charAt(0).toUpperCase() + word.slice(1)

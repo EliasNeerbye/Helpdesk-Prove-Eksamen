@@ -76,7 +76,6 @@ module.exports = async (req, res) => {
         }
 
         // Update the profile
-        console.log('Updating profile with fields:', updateFields);
         const updatedProfile = await Profile.findByIdAndUpdate(
             req.user.profile,
             { $set: updateFields }, // Use $set to ensure fields are updated

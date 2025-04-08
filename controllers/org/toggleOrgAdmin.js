@@ -59,8 +59,17 @@ module.exports = async (req, res) => {
         
         // Get updated user information
         const updatedUser = await User.findById(userId).select('-password');
-        updatedUser.role = isOrgAdmin ? 'user' : 'admin';
-        await updatedUser.save();
+        
+        // Update the user's role only if they're not already a system admin
+        // If they were a system admin, preserve that role
+        if (!isOrgAdmin && updatedUser.role !== 'admin') {
+            updatedUser.role = 'admin';
+            await updatedUser.save();
+        } else if (isOrgAdmin) {
+            // Only demote if not a system admin
+            updatedUser.role = 'user';
+            await updatedUser.save();
+        }
         
         return res.status(200).json({
             message: isOrgAdmin ? 

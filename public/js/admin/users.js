@@ -61,10 +61,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const deleteBtn = row.querySelector('.delete-user');
         const toggleAdminBtn = row.querySelector('.toggle-admin');
         
-        // Only show toggle button if user is not the main admin or system admin
-        // and the current user has admin privileges
+        // Only hide toggle button if user is the main admin
+        // Allow toggling orgAdmin status for all users except the main admin
         if (toggleAdminBtn) {
-            if (user.isMainAdmin || user.role === 'admin' || !currentUserIsAdmin) {
+            if (user.isMainAdmin || !currentUserIsAdmin) {
                 toggleAdminBtn.style.display = 'none';
             } else {
                 // Set button text and icon based on current admin status

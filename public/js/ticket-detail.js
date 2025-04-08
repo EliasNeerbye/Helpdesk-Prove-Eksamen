@@ -103,9 +103,6 @@ function renderTicketDetails(ticket) {
     // Set page title
     document.getElementById('ticket-title').textContent = ticket.summary;
     
-    // Set ticket ID
-    document.getElementById('ticket-id').textContent = ticket._id;
-    
     // Set category
     document.getElementById('ticket-category').textContent = ticket.category.name;
     

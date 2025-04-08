@@ -7,6 +7,7 @@ module.exports = async (req, res) => {
     const { summary, description, category, priority = 'medium' } = req.body;
     const userId = req.user._id;
 
+
     if (!description || !category) {
         return res.status(400).json({ message: 'Description and category are required' });
     }

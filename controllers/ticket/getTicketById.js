@@ -20,18 +20,17 @@ module.exports = async (req, res) => {
         
         // Check if ticket exists and belongs to the user's organization
         const ticket = await Ticket.findOne({
-            _id: ticketId,
-            _id: { $in: userOrg.tickets }
+            _id: ticketId
         })
             .populate('user', 'email')
             .populate('category', 'name');
-        
+        console.log(ticket);
         if (!ticket) {
             return res.status(404).json({ message: 'Ticket not found or not accessible' });
         }
         
         // Check if user has access to this ticket
-        if (!isAdmin && ticket.user.toString() !== userId.toString()) {
+        if (!isAdmin && ticket.user._id.toString() !== userId.toString()) {
             return res.status(403).json({ message: 'Not authorized to access this ticket' });
         }
         

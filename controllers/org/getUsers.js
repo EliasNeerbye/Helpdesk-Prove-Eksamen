@@ -4,7 +4,16 @@ module.exports = async (req, res) => {
     try {
         // Find the organization where the requesting user is a member
         const org = await Organization.findOne({ users: req.user._id })
-            .populate('users', '-password -__v')
+            .populate({
+            path: 'users',
+            select: '-password -__v',
+            populate: {
+                path: 'profile',
+                populate: {
+                path: 'profession'
+                }
+            }
+            })
             .lean();
 
         if (!org) {

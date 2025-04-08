@@ -41,45 +41,13 @@ document.addEventListener('DOMContentLoaded', () => {
         row.querySelector('.user-profession').textContent = user.profile?.profession?.name || 'Not set';
         row.querySelector('.user-status').textContent = user.profile ? 'Active' : 'Incomplete';
         
-        // Set up action buttons
-        const editBtn = row.querySelector('.edit-user');
         const deleteBtn = row.querySelector('.delete-user');
         
-        editBtn.addEventListener('click', () => openEditUserModal(user));
         deleteBtn.addEventListener('click', () => openDeleteUserConfirmation(user));
         
         usersList.appendChild(row);
     }
 
-    // Open edit user modal
-    function openEditUserModal(user) {
-        const template = document.getElementById('edit-user-form-template');
-        document.getElementById('modal-title').textContent = 'Edit User';
-        
-        const modalContent = template.content.cloneNode(true);
-        const form = modalContent.querySelector('#edit-user-form');
-        
-        // Populate form fields
-        form.querySelector('#user-email').value = user.email;
-        
-        // Add to modal body
-        const modalBody = document.getElementById('modal-body');
-        modalBody.innerHTML = '';
-        modalBody.appendChild(modalContent);
-        
-        // Show modal
-        openModal();
-        
-        // Handle form submission
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const formData = new FormData(form);
-            updateUser(user._id, Object.fromEntries(formData));
-        });
-        
-        // Handle cancel button
-        document.getElementById('cancel-user').addEventListener('click', closeModal);
-    }
 
     // Open delete user confirmation
     function openDeleteUserConfirmation(user) {

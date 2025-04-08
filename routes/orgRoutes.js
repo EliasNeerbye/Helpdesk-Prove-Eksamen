@@ -12,11 +12,11 @@ const getUsers = require('../controllers/org/getUsers');
 
 // Allow any user to create an organization without requiring isAdmin
 router.post('/create', createOrg);
+router.get('/users', getUsers);
 
 // Apply isAdmin middleware to the remaining routes
 router.use(isAdmin);
 
-router.get('/users', getUsers);
 router.put('/user', addUser);
 router.delete('/user/:userID', removeUser);
 

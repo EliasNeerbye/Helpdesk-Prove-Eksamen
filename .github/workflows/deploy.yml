@@ -8,27 +8,23 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: /home/administrator/helpdesk
     steps:
-      - name: Checkout Repository (if needed)
+      - name: Checkout Repository
         uses: actions/checkout@v3
-        # Checkout is not strictly necessary for these commands but might be useful for context
 
       - name: Test Directory Access
         run: |
-          echo "Navigating to /home/administrator/helpdesk"
-          cd /home/administrator/helpdesk || { echo "Directory not found!"; exit 1; }
           echo "Current directory: $(pwd)"
 
       - name: Test Git Pull
         run: |
-          echo "Running git pull in /home/administrator/helpdesk"
-          cd /home/administrator/helpdesk || { echo "Directory not found!"; exit 1; }
           git pull || { echo "git pull failed!"; exit 1; }
           echo "Git pull executed successfully."
 
       - name: Test PM2 Restart
         run: |
-          echo "Restarting PM2 processes in /home/administrator/helpdesk"
-          cd /home/administrator/helpdesk || { echo "Directory not found!"; exit 1; }
           pm2 restart all || { echo "PM2 restart failed!"; exit 1; }
           echo "PM2 processes restarted successfully."

@@ -108,6 +108,33 @@
     </div>
 </div>
 
+<div class="create-org-section">
+    <button class="btn btn-primary" id="open-create-org-modal">Create Organization</button>
+</div>
+
+<!-- Create Organization Modal -->
+<template id="create-org-modal-template">
+    <div class="modal">
+        <div class="modal-content">
+            <h3>Create an Organization</h3>
+            <form id="create-org-form">
+                <div class="form-group">
+                    <label for="org-name">Organization Name</label>
+                    <input type="text" id="org-name" name="name" placeholder="Enter organization name" required>
+                </div>
+                <div class="form-group">
+                    <label for="org-description">Description</label>
+                    <textarea id="org-description" name="description" placeholder="Enter organization description" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-create-org">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</template>
+
 <!-- Quick create ticket modal template -->
 <template id="create-ticket-template">
     <form id="quick-ticket-form" class="modal-form">

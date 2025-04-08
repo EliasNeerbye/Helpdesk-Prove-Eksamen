@@ -12,7 +12,7 @@ const ProfileSchema = new Schema({
         type: String,
         unique: true,
     },
-    pfp: {
+    profilePicture: {
         type: String,
     },
     profession: {

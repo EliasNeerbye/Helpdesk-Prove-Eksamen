@@ -7,6 +7,15 @@ const OrganizationSchema = new Schema({
         required: true,
         unique: true,
     },
+    description: {
+        type: String,
+        maxlength: 200,
+    },
+    admin: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
     users: [{
         type: Schema.Types.ObjectId,
         ref: 'User',
@@ -15,6 +24,6 @@ const OrganizationSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Ticket',
     }],
-},{timestamps: true});
+}, { timestamps: true });
 
 module.exports = mongoose.model('Organization', OrganizationSchema);

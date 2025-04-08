@@ -2,20 +2,6 @@
  * Main JavaScript file for the HelpDesk application
  */
 document.addEventListener('DOMContentLoaded', function() {
-    // Toggle sidebar
-    const sidebarToggle = document.getElementById('sidebar-toggle');
-    if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', function() {
-            document.body.classList.toggle('sidebar-collapsed');
-            localStorage.setItem('sidebar-collapsed', document.body.classList.contains('sidebar-collapsed'));
-        });
-        
-        // Check if sidebar was collapsed previously
-        if (localStorage.getItem('sidebar-collapsed') === 'true') {
-            document.body.classList.add('sidebar-collapsed');
-        }
-    }
-    
     // User dropdown toggle
     const dropdownToggle = document.querySelector('.dropdown-toggle');
     if (dropdownToggle) {
@@ -57,7 +43,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // New ticket button in sidebar
     const createTicketBtn = document.getElementById('create-ticket-btn');
     if (createTicketBtn) {
         createTicketBtn.addEventListener('click', function() {

@@ -1,68 +1,58 @@
 /**
  * Profile page functionality
  */
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize page
-    initProfile();
+document.addEventListener('DOMContentLoaded', function () {
+    // Initialize the profile page
+    initializeProfile();
     
     // Setup event listeners
     setupEventListeners();
 });
 
 /**
- * Initializes the profile page
+ * Initializes the profile page by loading the profile and setting up the UI.
  */
-function initProfile() {
-    // Check if profile exists and display appropriate UI
-    checkProfileStatus();
-    
-    // Format account creation date
-    fetch('/api/profile/get')
-        .then(response => response.json())
-        .then(data => {
-            if (data.user) {
-                const createdAt = formatDate(data.user.createdAt, true);
-                document.getElementById('account-created').textContent = createdAt;
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching profile:', error);
-        });
-}
-
-/**
- * Checks profile status and updates UI accordingly
- */
-function checkProfileStatus() {
-    fetch('/api/profile/get')
-        .then(response => response.json())
+function initializeProfile() {
+    fetchProfileData()
         .then(data => {
             const hasProfile = data.profile != null;
-            
+
             // Show appropriate UI based on profile existence
-            const profileForm = document.getElementById('profile-form');
             const createProfileSection = document.getElementById('create-profile-section');
             const updateProfileSection = document.getElementById('update-profile-section');
             const profileMissingBanner = document.getElementById('profile-missing-banner');
-            
+
             if (hasProfile) {
                 // Profile exists - show update UI
                 if (createProfileSection) createProfileSection.style.display = 'none';
-                if (updateProfileSection) updateProfileSection.style.display = 'block';
+                if (updateProfileSection) updateProfileSection.style.display = 'flex';
                 if (profileMissingBanner) profileMissingBanner.style.display = 'none';
-                
+
                 // Populate form with existing data
-                if (data.profile) {
-                    if (data.profile.firstName) document.getElementById('firstName').value = data.profile.firstName;
-                    if (data.profile.lastName) document.getElementById('lastName').value = data.profile.lastName;
-                    if (data.profile.phone) document.getElementById('phone').value = data.profile.phone;
-                    
-                    // Set profession dropdown if it exists
-                    if (data.profile.profession) {
-                        const professionSelect = document.getElementById('profession');
-                        if (professionSelect) {
-                            professionSelect.value = data.profile.profession._id || data.profile.profession;
-                        }
+                populateProfileForm(data.profile);
+
+                // Set account creation date
+                if (data.user) {
+                    const createdAt = formatDate(data.user.createdAt, true);
+                    document.getElementById('account-created').textContent = createdAt;
+                }
+
+                // Set profile picture
+                if (data.profile.profilePicture) {
+                    const profileImg = document.getElementById('profile-image');
+                    const placeholder = document.getElementById('profile-image-placeholder');
+                    const imgUrl = `/assets/uploads/${data.profile.profilePicture}`;
+
+                    if (profileImg) {
+                        profileImg.src = imgUrl; // Update the image source
+                    } else if (placeholder) {
+                        // Replace placeholder with actual image
+                        const img = document.createElement('img');
+                        img.src = imgUrl;
+                        img.alt = 'Profile Photo';
+                        img.id = 'profile-image';
+
+                        placeholder.parentNode.replaceChild(img, placeholder);
                     }
                 }
             } else {
@@ -73,8 +63,45 @@ function checkProfileStatus() {
             }
         })
         .catch(error => {
-            console.error('Error checking profile status:', error);
-            showToast('error', 'Error', 'Failed to check profile status');
+            console.error('Error initializing profile:', error);
+            showToast('error', 'Error', 'Failed to load profile');
+        });
+}
+
+/**
+ * Populates the profile form with existing profile data.
+ * @param {Object} profile - The profile data to populate.
+ */
+function populateProfileForm(profile) {
+    if (profile.firstName) document.getElementById('firstName').value = profile.firstName;
+    if (profile.lastName) document.getElementById('lastName').value = profile.lastName;
+    if (profile.phone) document.getElementById('phone').value = profile.phone;
+
+    // Set profession dropdown if it exists
+    if (profile.profession) {
+        const professionSelect = document.getElementById('profession');
+        if (professionSelect) {
+            professionSelect.value = profile.profession._id || profile.profession;
+        }
+    }
+}
+
+/**
+ * Reloads the profile only if necessary.
+ */
+function reloadProfileIfNeeded() {
+    fetchProfileData()
+        .then(data => {
+            const hasProfile = data.profile != null;
+
+            if (hasProfile) {
+                // Update the profile form with the latest data
+                populateProfileForm(data.profile);
+            }
+        })
+        .catch(error => {
+            console.error('Error reloading profile:', error);
+            showToast('error', 'Error', 'Failed to reload profile');
         });
 }
 
@@ -215,6 +242,7 @@ function uploadProfilePhoto(file) {
     // Create form data
     const formData = new FormData();
     formData.append('profilePicture', file);
+    formData.append('firstName', document.getElementById("firstName").value); // Dummy field to prevent error
     
     // Send request
     fetch('/api/profile/update', {
@@ -227,7 +255,6 @@ function uploadProfilePhoto(file) {
             // Update profile image on page
             const profileImg = document.getElementById('profile-image');
             const placeholder = document.getElementById('profile-image-placeholder');
-            
             if (data.profile && data.profile.profilePicture) {
                 const imgUrl = `/assets/uploads/${data.profile.profilePicture}`;
                 
@@ -246,7 +273,6 @@ function uploadProfilePhoto(file) {
             
             showToast('success', 'Success', 'Profile photo updated successfully');
             
-            // Reload page to update sidebar and header profile images
             setTimeout(() => {
                 window.location.reload();
             }, 1000);
@@ -316,4 +342,17 @@ function deleteProfile() {
         console.error('Error:', error);
         showToast('error', 'Error', 'Failed to delete profile');
     });
+}
+
+/**
+ * Fetches profile data from the server.
+ * @returns {Promise<Object>} The profile data.
+ */
+function fetchProfileData() {
+    return fetch('/api/profile/get')
+        .then(response => response.json())
+        .catch(error => {
+            console.error('Error fetching profile:', error);
+            throw error;
+        });
 }

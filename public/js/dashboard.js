@@ -23,6 +23,52 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+    const openCreateOrgModalBtn = document.getElementById('open-create-org-modal');
+    const modalTemplate = document.getElementById('create-org-modal-template');
+
+    openCreateOrgModalBtn.addEventListener('click', () => {
+        // Clone and append the modal content
+        const modalContent = modalTemplate.content.cloneNode(true);
+        document.body.appendChild(modalContent);
+
+        const modal = document.querySelector('.modal');
+        const cancelBtn = modal.querySelector('#cancel-create-org');
+        const form = modal.querySelector('#create-org-form');
+
+        // Close the modal on cancel
+        cancelBtn.addEventListener('click', () => {
+            modal.remove();
+        });
+
+        // Handle form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+
+            try {
+                const response = await fetch('/api/org/create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    alert(result.message);
+                    modal.remove();
+                } else {
+                    alert(result.message || 'Failed to create organization');
+                }
+            } catch (error) {
+                console.error('Error creating organization:', error);
+                alert('An error occurred. Please try again.');
+            }
+        });
+    });
+});
+
 /**
  * Checks if prerequisites are met (organization and profile)
  * @returns {Promise<Object>} Object with boolean flags for requirements

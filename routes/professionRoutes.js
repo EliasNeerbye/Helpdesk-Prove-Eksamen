@@ -3,8 +3,8 @@ const getUser = require('../middleware/getUser');
 const isAdmin = require('../middleware/isAdmin');
 
 // Controllers
-const createProfession = require('../controllers/profession/createProfession');
 const getProfessions = require('../controllers/profession/getProfessions');
+const createProfession = require('../controllers/profession/createProfession');
 
 // Get professions - available to all authenticated users
 router.get('/list', getUser, getProfessions);

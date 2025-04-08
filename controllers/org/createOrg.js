@@ -39,7 +39,8 @@ module.exports = async (req, res) => {
         const newOrg = new Organization({
             name,
             description,
-            users: [req.user._id],
+            admin: req.user._id, // Set the creating user as the admin
+            users: [req.user._id], // Add the user to the organization
         });
         
         await newOrg.save();
@@ -51,4 +52,4 @@ module.exports = async (req, res) => {
         console.error("Error saving organization.\n\n", error);
         return res.status(500).json({ message: "Internal server error" });
     }
-}
+};

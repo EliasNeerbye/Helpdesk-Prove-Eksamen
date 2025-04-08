@@ -10,6 +10,7 @@ const SessionSecret = process.env.SESSION_SECRET || "very-secret-key";
 
 const HttpType = process.env.HTTP_TYPE || 'http';
 const Port = process.env.PORT || 3000;
+const FrontendURL = process.env.FRONTEND_URL || 'http://localhost:3000';
 
 const config = {
     MongoProd,
@@ -17,6 +18,7 @@ const config = {
     SessionSecret,
     HttpType,
     Port,
+    FrontendURL,
 }
 
 module.exports = config;

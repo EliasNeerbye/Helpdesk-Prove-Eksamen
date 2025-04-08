@@ -117,9 +117,9 @@ else
   cd "$APP_DIR"
 fi
 
-# Ask for MongoDB credentials
-read -p "Enter MongoDB username: " MONGO_USER
-read -sp "Enter MongoDB password: " MONGO_PASS
+# Ask for MongoDB credentials, reading directly from the terminal
+read -p "Enter MongoDB username: " MONGO_USER </dev/tty
+read -sp "Enter MongoDB password: " MONGO_PASS </dev/tty
 echo
 
 # Generate session secret
@@ -151,7 +151,7 @@ EOL
 log "Installing application dependencies..."
 npm install
 
-# Configure Nginx
+# Configure Nginx as reverse proxy
 log "Configuring Nginx as reverse proxy..."
 NGINX_CONFIG_PATH="/tmp/helpdesk.conf"
 cat > "$NGINX_CONFIG_PATH" << EOL

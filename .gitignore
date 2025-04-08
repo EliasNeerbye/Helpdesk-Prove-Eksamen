@@ -136,4 +136,5 @@ dist
 .pnp.*
 
 
-tmp/
+temp/
+uploads/

@@ -157,34 +157,12 @@ NGINX_CONFIG_PATH="/tmp/helpdesk.conf"
 cat > "$NGINX_CONFIG_PATH" << EOL
 server {
     listen 80;
-    server_name $SERVER_IP;
+    server_name your_domain_or_IP;
 
     location / {
         proxy_pass http://localhost:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host \$host;
-        proxy_cache_bypass \$http_upgrade;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$scheme;
-    }
-
-    # Serve static files directly
-    location /assets/ {
-        alias $APP_DIR/public/assets/;
-        expires 7d;
-    }
-
-    location /css/ {
-        alias $APP_DIR/public/css/;
-        expires 7d;
-    }
-
-    location /js/ {
-        alias $APP_DIR/public/js/;
-        expires 7d;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
     }
 }
 EOL

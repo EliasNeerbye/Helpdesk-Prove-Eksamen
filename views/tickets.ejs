@@ -1,9 +1,12 @@
 <%- include('layout-start', { title: title, user: user, isAdmin: isAdmin }) %>
 
 <div class="tickets-container">
-    <div class="tickets-header">
+    <div class="tickets-title-section">
         <h2>Tickets</h2>
-        <div class="tickets-actions">
+    </div>
+    
+    <div class="tickets-filters-section">
+        <div class="filters-wrapper">
             <div class="filters">
                 <select id="status-filter" class="filter-select">
                     <option value="all">All Statuses</option>
@@ -22,7 +25,6 @@
                 
                 <select id="category-filter" class="filter-select">
                     <option value="all">All Categories</option>
-                    <!-- Categories will be loaded dynamically -->
                 </select>
             </div>
             
@@ -39,49 +41,56 @@
         </div>
     </div>
     
-    <div class="tickets-table-container">
-        <table class="tickets-table">
-            <thead>
-                <tr>
-                    <th class="sortable" data-sort="id">ID <i class="fas fa-sort"></i></th>
-                    <th class="sortable" data-sort="summary">Summary <i class="fas fa-sort"></i></th>
-                    <% if (isAdmin) { %>
-                        <th class="sortable" data-sort="user">Submitted By <i class="fas fa-sort"></i></th>
-                    <% } %>
-                    <th class="sortable" data-sort="category">Category <i class="fas fa-sort"></i></th>
-                    <th class="sortable" data-sort="priority">Priority <i class="fas fa-sort"></i></th>
-                    <th class="sortable" data-sort="status">Status <i class="fas fa-sort"></i></th>
-                    <th class="sortable" data-sort="createdAt">Created <i class="fas fa-sort"></i></th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="tickets-body">
-                <tr class="loading-row">
-                    <td colspan="<%= isAdmin ? 8 : 7 %>" class="text-center">
-                        <div class="loading-spinner">
-                            <div class="spinner"></div>
-                            <p>Loading tickets...</p>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="section-divider"></div>
+    
+    <div class="tickets-table-section">
+        <div class="tickets-table-container">
+            <table class="tickets-table">
+                <thead>
+                    <tr>
+                        <th class="sortable" data-sort="id">ID <i class="fas fa-sort"></i></th>
+                        <th class="sortable" data-sort="summary">Summary <i class="fas fa-sort"></i></th>
+                        <% if (isAdmin) { %>
+                            <th class="sortable" data-sort="user">Submitted By <i class="fas fa-sort"></i></th>
+                        <% } %>
+                        <th class="sortable" data-sort="category">Category <i class="fas fa-sort"></i></th>
+                        <th class="sortable" data-sort="priority">Priority <i class="fas fa-sort"></i></th>
+                        <th class="sortable" data-sort="status">Status <i class="fas fa-sort"></i></th>
+                        <th class="sortable" data-sort="createdAt">Created <i class="fas fa-sort"></i></th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="tickets-body">
+                    <tr class="loading-row">
+                        <td colspan="<%= isAdmin ? 8 : 7 %>" class="text-center">
+                            <div class="loading-spinner">
+                                <div class="spinner"></div>
+                                <p>Loading tickets...</p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
     
-    <div class="pagination">
-        <button id="prev-page" class="pagination-btn" disabled>
-            <i class="fas fa-chevron-left"></i> Previous
-        </button>
-        <div id="page-numbers" class="page-numbers">
-            <span class="current-page">1</span>
+    <div class="section-divider"></div>
+    
+    <div class="tickets-pagination-section">
+        <div class="pagination">
+            <button id="prev-page" class="pagination-btn" disabled>
+                <i class="fas fa-chevron-left"></i> Previous
+            </button>
+            <div id="page-numbers" class="page-numbers">
+                <span class="current-page">1</span>
+            </div>
+            <button id="next-page" class="pagination-btn" disabled>
+                Next <i class="fas fa-chevron-right"></i>
+            </button>
         </div>
-        <button id="next-page" class="pagination-btn" disabled>
-            Next <i class="fas fa-chevron-right"></i>
-        </button>
     </div>
 </div>
 
-<!-- Templates -->
 <template id="ticket-row-template">
     <tr class="ticket-row">
         <td class="ticket-id"></td>
@@ -123,7 +132,6 @@
     </tr>
 </template>
 
-<!-- Create ticket modal template (same as in dashboard) -->
 <template id="create-ticket-template">
     <form id="quick-ticket-form" class="modal-form">
         <div class="form-group">
@@ -140,7 +148,6 @@
             <label for="ticket-category">Category</label>
             <select id="ticket-category" name="category" required>
                 <option value="">Select a category</option>
-                <!-- Categories will be loaded dynamically -->
             </select>
         </div>
         
@@ -160,14 +167,12 @@
     </form>
 </template>
 
-<!-- Admin Create Ticket For User modal template -->
 <template id="create-ticket-for-user-template">
     <form id="ticket-for-user-form" class="modal-form">
         <div class="form-group">
             <label for="user-select">Select User</label>
             <select id="user-select" name="userId" required>
                 <option value="">Select a user</option>
-                <!-- Users will be loaded dynamically -->
             </select>
         </div>
         
@@ -185,7 +190,6 @@
             <label for="ticket-user-category">Category</label>
             <select id="ticket-user-category" name="category" required>
                 <option value="">Select a category</option>
-                <!-- Categories will be loaded dynamically -->
             </select>
         </div>
         
@@ -206,9 +210,11 @@
 </template>
 
 <% if (isAdmin) { %>
-    <button class="btn btn-secondary" id="create-for-user-btn">
-        <i class="fas fa-user-plus"></i> Create for User
-    </button>
+    <div class="admin-actions-container">
+        <button class="btn btn-secondary" id="create-for-user-btn">
+            <i class="fas fa-user-plus"></i> Create for User
+        </button>
+    </div>
 <% } %>
 <% if (isAdmin) { %>
     <script src="/js/admin/create-ticket-for-user.js"></script>

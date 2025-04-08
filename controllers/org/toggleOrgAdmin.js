@@ -59,6 +59,8 @@ module.exports = async (req, res) => {
         
         // Get updated user information
         const updatedUser = await User.findById(userId).select('-password');
+        updatedUser.role = isOrgAdmin ? 'user' : 'admin';
+        await updatedUser.save();
         
         return res.status(200).json({
             message: isOrgAdmin ? 

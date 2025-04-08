@@ -1,4 +1,5 @@
 const Organization = require("../../models/Organization");
+const User = require("../../models/User");
 
 module.exports = async (req, res) => {
     try {
@@ -42,6 +43,8 @@ module.exports = async (req, res) => {
             admin: req.user._id, // Set the creating user as the admin
             users: [req.user._id], // Add the user to the organization
         });
+
+        await User.findByIdAndUpdate(req.user._id, { role: "admin" });
         
         await newOrg.save();
         return res.status(201).json({ 

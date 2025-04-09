@@ -13,6 +13,12 @@ function openUserManual() {
     // Set modal title
     document.getElementById('modal-title').textContent = 'User Manual';
     
+    // Add a class to the modal container for specific styling
+    document.getElementById('modal-container').classList.add('manual-modal');
+    
+    // Add scrollable class to modal body
+    document.getElementById('modal-body').classList.add('scrollable');
+    
     // Create content based on role
     let manualContent = '';
     
@@ -37,56 +43,84 @@ function openUserManual() {
     openModal();
 }
 
+// Modal close handler to remove custom classes
+document.addEventListener('DOMContentLoaded', function() {
+    const originalCloseModal = window.closeModal;
+    
+    // Override the closeModal function to also remove our custom classes
+    window.closeModal = function() {
+        // Call the original closeModal function
+        originalCloseModal();
+        
+        // Remove our custom classes
+        setTimeout(() => {
+            const modalContainer = document.getElementById('modal-container');
+            const modalBody = document.getElementById('modal-body');
+            
+            if (modalContainer) {
+                modalContainer.classList.remove('faq-modal', 'manual-modal');
+            }
+            
+            if (modalBody) {
+                modalBody.classList.remove('scrollable');
+            }
+        }, 300);
+    };
+});
+
+// Update the function that creates user manual content
 function createUserManual() {
     return `
         <div class="manual-content">
-            <h3>Customer User Manual</h3>
+            <div class="section-title">Customer User Manual</div>
             
-            <div class="manual-section">
-                <h4>Creating a Ticket</h4>
-                <p>To create a new support ticket:</p>
-                <ol>
-                    <li>Click the "New Ticket" button in the sidebar or on the tickets page</li>
-                    <li>Fill in the summary and detailed description of your issue</li>
-                    <li>Select the appropriate category and priority</li>
-                    <li>Click "Create Ticket" to submit</li>
-                </ol>
-                <p>Your ticket will be assigned to a support agent who will begin working on your issue.</p>
-            </div>
-            
-            <div class="manual-section">
-                <h4>Tracking Your Tickets</h4>
-                <p>You can view all your tickets on the "Tickets" page. Each ticket will display:</p>
-                <ul>
-                    <li>Status (Open, In Progress, Resolved, Closed)</li>
-                    <li>Priority (Low, Medium, High)</li>
-                    <li>Creation date</li>
-                </ul>
-                <p>Click on any ticket to view its details and conversation history.</p>
-            </div>
-            
-            <div class="manual-section">
-                <h4>Responding to Comments</h4>
-                <p>When a support agent responds to your ticket, you can reply by:</p>
-                <ol>
-                    <li>Opening the ticket details</li>
-                    <li>Scrolling to the comment section</li>
-                    <li>Entering your response</li>
-                    <li>Clicking "Add Comment"</li>
-                </ol>
-            </div>
-            
-            <div class="manual-section">
-                <h4>Providing Feedback</h4>
-                <p>When your ticket is marked as "Resolved", you'll be able to provide feedback:</p>
-                <ol>
-                    <li>Open the resolved ticket</li>
-                    <li>Look for the feedback form at the bottom</li>
-                    <li>Rate your experience (1-5 stars)</li>
-                    <li>Add any additional comments</li>
-                    <li>Submit your feedback</li>
-                </ol>
-                <p>Your feedback helps us improve our support services.</p>
+            <div class="content-container">
+                <div class="manual-section">
+                    <h3>Creating a Ticket</h3>
+                    <p>To create a new support ticket:</p>
+                    <ol>
+                        <li>Click the "New Ticket" button in the sidebar or on the tickets page</li>
+                        <li>Fill in the summary and detailed description of your issue</li>
+                        <li>Select the appropriate category and priority</li>
+                        <li>Click "Create Ticket" to submit</li>
+                    </ol>
+                    <p>Your ticket will be assigned to a support agent who will begin working on your issue.</p>
+                </div>
+                
+                <div class="manual-section">
+                    <h3>Tracking Your Tickets</h3>
+                    <p>You can view all your tickets on the "Tickets" page. Each ticket will display:</p>
+                    <ul>
+                        <li>Status (Open, In Progress, Resolved, Closed)</li>
+                        <li>Priority (Low, Medium, High)</li>
+                        <li>Creation date</li>
+                    </ul>
+                    <p>Click on any ticket to view its details and conversation history.</p>
+                </div>
+                
+                <div class="manual-section">
+                    <h3>Responding to Comments</h3>
+                    <p>When a support agent responds to your ticket, you can reply by:</p>
+                    <ol>
+                        <li>Opening the ticket details</li>
+                        <li>Scrolling to the comment section</li>
+                        <li>Entering your response</li>
+                        <li>Clicking "Add Comment"</li>
+                    </ol>
+                </div>
+                
+                <div class="manual-section">
+                    <h3>Providing Feedback</h3>
+                    <p>When your ticket is marked as "Resolved", you'll be able to provide feedback:</p>
+                    <ol>
+                        <li>Open the resolved ticket</li>
+                        <li>Look for the feedback form at the bottom</li>
+                        <li>Rate your experience (1-5 stars)</li>
+                        <li>Add any additional comments</li>
+                        <li>Submit your feedback</li>
+                    </ol>
+                    <p>Your feedback helps us improve our support services.</p>
+                </div>
             </div>
         </div>
     `;

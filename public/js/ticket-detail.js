@@ -2,6 +2,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const path = window.location.pathname;
     const ticketId = path.split('/').pop();
     
+    try {
+        document.getElementById('resolve-ticket-btn').addEventListener('click', function() {
+            updateTicket(ticketId, { status: 'resolved' });
+        });
+    } catch (error) {
+        console.error('Resolve button not found:', error);
+    }
+
     loadTicketDetails(ticketId);
     setupEventListeners(ticketId);
 });
@@ -150,7 +158,7 @@ function loadTicketDetails(ticketId) {
                 document.getElementById('ticket-loading').style.display = 'none';
                 document.getElementById('ticket-info').style.display = 'block';
                 
-                if (data.ticket.status === 'resolved') {
+                if (data.ticket.status === 'resolved' || data.ticket.status === 'closed') {
                     loadFeedbackStatus(ticketId);
                 }
                 
@@ -341,6 +349,9 @@ function renderTicketDetails(ticket) {
     if (prioritySelect) {
         prioritySelect.value = ticket.priority;
     }
+    
+    // Update resolve button visibility
+    updateResolveButtonVisibility(ticket.status);
 }
 
 function updateTicket(ticketId, updateData) {
@@ -605,17 +616,24 @@ function showFeedbackForm(ticketId) {
                         <div class="form-group">
                             <label>How would you rate our support?</label>
                             <div class="rating-container">
-                                <div class="star-rating">
-                                    <input type="radio" id="star5" name="rating" value="5" />
-                                    <label for="star5"><i class="fas fa-star"></i></label>
-                                    <input type="radio" id="star4" name="rating" value="4" />
-                                    <label for="star4"><i class="fas fa-star"></i></label>
-                                    <input type="radio" id="star3" name="rating" value="3" checked />
-                                    <label for="star3"><i class="fas fa-star"></i></label>
-                                    <input type="radio" id="star2" name="rating" value="2" />
-                                    <label for="star2"><i class="fas fa-star"></i></label>
+                                <div class="star-icons">
+                                    <i class="fas fa-star" data-rating="1"></i>
+                                    <i class="fas fa-star" data-rating="2"></i>
+                                    <i class="fas fa-star" data-rating="3"></i>
+                                    <i class="fas fa-star" data-rating="4"></i>
+                                    <i class="fas fa-star" data-rating="5"></i>
+                                </div>
+                                <div class="radio-buttons">
                                     <input type="radio" id="star1" name="rating" value="1" />
-                                    <label for="star1"><i class="fas fa-star"></i></label>
+                                    <label for="star1">1</label>
+                                    <input type="radio" id="star2" name="rating" value="2" />
+                                    <label for="star2">2</label>
+                                    <input type="radio" id="star3" name="rating" value="3" checked />
+                                    <label for="star3">3</label>
+                                    <input type="radio" id="star4" name="rating" value="4" />
+                                    <label for="star4">4</label>
+                                    <input type="radio" id="star5" name="rating" value="5" />
+                                    <label for="star5">5</label>
                                 </div>
                             </div>
                         </div>
@@ -785,6 +803,9 @@ function updateTicketUI(ticket) {
         prioritySelect.value = ticket.priority;
     }
     
+    // Update resolve button visibility
+    updateResolveButtonVisibility(ticket.status);
+    
     if (ticket.status === 'resolved' && lastStatus !== 'resolved') {
         loadFeedbackStatus(ticket._id);
         
@@ -796,6 +817,17 @@ function updateTicketUI(ticket) {
     
     lastStatus = ticket.status;
     lastPriority = ticket.priority;
+}
+
+function updateResolveButtonVisibility(status) {
+    const resolveButton = document.getElementById('resolve-ticket-btn');
+    if (resolveButton) {
+        if (status === 'open' || status === 'in-progress') {
+            resolveButton.style.display = 'inline-flex';
+        } else {
+            resolveButton.style.display = 'none';
+        }
+    }
 }
 
 function showFeedbackPrompt(ticketId) {

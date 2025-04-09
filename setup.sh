@@ -40,11 +40,8 @@ if [ -z "$SERVER_IP" ]; then
   error "Could not determine server IP address"
 fi
 
-# Get the username for DNS configuration
-read -p "Enter your username/alias for domain (will be used as support.USERNAME.ikt-fag.no): " USER_ALIAS
-if [ -z "$USER_ALIAS" ]; then
-  error "Username/alias is required for DNS configuration"
-fi
+
+$USER_ALIAS="caracal"
 DOMAIN="support.$USER_ALIAS.ikt-fag.no"
 
 # Split IP into parts and increment the last octet

@@ -9,9 +9,17 @@ function openFaqModal() {
     // Set modal title
     document.getElementById('modal-title').textContent = 'Frequently Asked Questions';
     
+    // Add a class to the modal container for specific styling
+    document.getElementById('modal-container').classList.add('faq-modal');
+    
+    // Add scrollable class to modal body
+    document.getElementById('modal-body').classList.add('scrollable');
+    
     // Create FAQ content
     const faqContent = `
         <div class="faq-content">
+            <div class="section-title">Helpdesk FAQ</div>
+            
             <div class="faq-section">
                 <h3>General Questions</h3>
                 
@@ -116,25 +124,22 @@ function openFaqModal() {
     // Set modal content
     document.getElementById('modal-body').innerHTML = faqContent;
     
-    // Add click handlers for expanding/collapsing FAQ items
-    setTimeout(() => {
-        const faqQuestions = document.querySelectorAll('.faq-question');
-        faqQuestions.forEach(question => {
-            question.addEventListener('click', function() {
-                const answer = this.nextElementSibling;
-                const item = this.parentElement;
-                
-                item.classList.toggle('expanded');
-                
-                if (item.classList.contains('expanded')) {
-                    answer.style.maxHeight = answer.scrollHeight + 'px';
-                } else {
-                    answer.style.maxHeight = '0';
-                }
-            });
-        });
-    }, 0);
-    
     // Show modal
     openModal();
+    
+    // Add click handlers for expanding/collapsing FAQ items
+    const faqQuestions = document.querySelectorAll('.faq-question');
+    faqQuestions.forEach(question => {
+        question.addEventListener('click', function() {
+            const item = this.parentElement;
+            item.classList.toggle('expanded');
+            
+            const answer = item.querySelector('.faq-answer');
+            if (item.classList.contains('expanded')) {
+                answer.style.maxHeight = answer.scrollHeight + 50 + 'px';
+            } else {
+                answer.style.maxHeight = '0';
+            }
+        });
+    });
 }

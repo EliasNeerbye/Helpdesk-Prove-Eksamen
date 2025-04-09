@@ -381,7 +381,7 @@ function updateTicket(ticketId, updateData) {
             renderTicketDetails(data.ticket);
             loadTicketHistory(ticketId);
             
-            if (data.ticket.status === 'resolved') {
+            if (data.ticket.status === 'resolved' || data.ticket.status === 'closed') {
                 loadFeedbackStatus(ticketId);
             }
             
@@ -532,7 +532,7 @@ function loadFeedbackStatus(ticketId) {
                 const isAdmin = document.querySelector('meta[name="user-role"]')?.content === 'admin';
                 const isSupport = ['1st-line', '2nd-line'].includes(document.querySelector('meta[name="user-role"]')?.content);
                 
-                if (data.ticket.status === 'resolved') {
+                if (data.ticket.status === 'resolved' || data.ticket.status === 'closed') {
                     fetch(`/api/feedback/${ticketId}`)
                         .then(response => {
                             if (response.status === 404) {
@@ -881,7 +881,7 @@ function checkForUpdates(ticketId) {
                         const newStatus = formatStatus(data.ticket.status);
                         showToast('info', 'Status Updated', `Ticket status changed to ${newStatus}`);
                         
-                        if (data.ticket.status === 'resolved') {
+                        if (data.ticket.status === 'resolved' || data.ticket.status === 'closed') {
                             const currentUserId = document.querySelector('meta[name="user-id"]')?.content;
                             if (currentUserId === data.ticket.user._id) {
                                 showFeedbackPrompt(ticketId);

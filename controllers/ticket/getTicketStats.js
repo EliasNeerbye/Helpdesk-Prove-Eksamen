@@ -1,4 +1,5 @@
 const Ticket = require('../../models/Ticket');
+const User = require('../../models/User');
 const Organization = require('../../models/Organization');
 
 module.exports = async (req, res) => {
@@ -18,7 +19,8 @@ module.exports = async (req, res) => {
                 stats: {
                     total: 0,
                     byStatus: { open: 0, inProgress: 0, resolved: 0, closed: 0, canceled: 0 },
-                    byPriority: { low: 0, medium: 0, high: 0 }
+                    byPriority: { low: 0, medium: 0, high: 0 },
+                    byRole: { '1st-line': 0, '2nd-line': 0, unassigned: 0 }
                 }
             });
         }
@@ -40,6 +42,19 @@ module.exports = async (req, res) => {
                 low: tickets.filter(t => t.priority === 'low').length,
                 medium: tickets.filter(t => t.priority === 'medium').length,
                 high: tickets.filter(t => t.priority === 'high').length
+            },
+            byRole: {
+                '1st-line': {
+                    total: tickets.filter(t => t.assignedRole === '1st-line').length,
+                    resolved: tickets.filter(t => t.assignedRole === '1st-line' && t.status === 'resolved').length,
+                    closed: tickets.filter(t => t.assignedRole === '1st-line' && t.status === 'closed').length
+                },
+                '2nd-line': {
+                    total: tickets.filter(t => t.assignedRole === '2nd-line').length,
+                    resolved: tickets.filter(t => t.assignedRole === '2nd-line' && t.status === 'resolved').length,
+                    closed: tickets.filter(t => t.assignedRole === '2nd-line' && t.status === 'closed').length
+                },
+                unassigned: tickets.filter(t => !t.assignedRole).length
             }
         };
         
@@ -52,4 +67,4 @@ module.exports = async (req, res) => {
         console.error("Error retrieving ticket statistics.\n\n", error);
         return res.status(500).json({ message: 'Internal server error' });
     }
-}
+};

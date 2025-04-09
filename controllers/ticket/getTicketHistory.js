@@ -28,8 +28,11 @@ module.exports = async (req, res) => {
             return res.status(404).json({ message: 'Ticket not found or not accessible' });
         }
         
-        // Check if user has access to this ticket
-        if (!isAdmin && ticket.user.toString() !== userId.toString()) {
+        // Check if user has access to this ticket (is admin, owner, or assignee)
+        const isTicketOwner = ticket.user.toString() === userId.toString();
+        const isTicketAssignee = ticket.assignedTo && ticket.assignedTo.toString() === userId.toString();
+        
+        if (!isAdmin && !isTicketOwner && !isTicketAssignee) {
             return res.status(403).json({ message: 'Not authorized to view ticket history' });
         }
         
@@ -46,4 +49,4 @@ module.exports = async (req, res) => {
         console.error("Error retrieving ticket history.\n\n", error);
         return res.status(500).json({ message: 'Internal server error' });
     }
-}
+};

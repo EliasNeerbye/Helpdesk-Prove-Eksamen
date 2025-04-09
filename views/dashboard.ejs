@@ -46,6 +46,7 @@
                 </div>
                 <a href="/admin/users" class="summary-link">Manage</a>
             </div>
+            
         <% } else { %>
             <div class="summary-card">
                 <div class="summary-icon">
@@ -105,6 +106,20 @@
                 </div>
             <% } %>
         </div>
+        
+        <% if (isAdmin) { %>
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h3>Support Team Performance</h3>
+                </div>
+                <div id="role-stats">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Loading team statistics...</p>
+                    </div>
+                </div>
+            </div>
+        <% } %>
     </div>
     
     <!-- Create organization section - hidden by default -->
@@ -151,5 +166,9 @@
 </template>
 
 <script src="/js/dashboard.js"></script>
+
+<% if (isAdmin) { %>
+    <script src="/js/admin/dashboard-stats.js"></script>
+<% } %>
 
 <%- include('layout-end') %>

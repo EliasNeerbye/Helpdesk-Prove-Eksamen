@@ -37,11 +37,17 @@ document.addEventListener('DOMContentLoaded', () => {
         row.querySelector('.user-name').textContent = user.profile ? 
             `${user.profile.firstName} ${user.profile.lastName}` : 'No profile';
         
-        // Show system role and organization admin status
+        // Show role
         const roleCell = row.querySelector('.user-role');
         if (user.role === 'admin') {
             roleCell.textContent = 'System Admin';
             roleCell.classList.add('system-admin');
+        } else if (user.role === '1st-line') {
+            roleCell.textContent = '1st Line Support';
+            roleCell.classList.add('support-role');
+        } else if (user.role === '2nd-line') {
+            roleCell.textContent = '2nd Line Support';
+            roleCell.classList.add('support-role');
         } else {
             roleCell.textContent = user.isMainAdmin ? 
                 'Organization Owner' : 
@@ -58,8 +64,20 @@ document.addEventListener('DOMContentLoaded', () => {
         row.querySelector('.user-status').textContent = user.profile ? 'Active' : 'Incomplete';
         
         // Get action buttons
-        const deleteBtn = row.querySelector('.delete-user');
+        const changeRoleBtn = row.querySelector('.change-role');
         const toggleAdminBtn = row.querySelector('.toggle-admin');
+        const deleteBtn = row.querySelector('.delete-user');
+        
+        // Set up change role button
+        if (changeRoleBtn) {
+            if (user.isMainAdmin || !currentUserIsAdmin) {
+                changeRoleBtn.style.display = 'none';
+            } else {
+                changeRoleBtn.addEventListener('click', () => {
+                    openChangeRoleModal(user);
+                });
+            }
+        }
         
         // Only hide toggle button if user is the main admin
         // Allow toggling orgAdmin status for all users except the main admin
@@ -97,6 +115,95 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         usersList.appendChild(row);
+    }
+    
+    // Open change role modal
+    function openChangeRoleModal(user) {
+        const template = document.getElementById('change-role-form-template');
+        
+        document.getElementById('modal-title').textContent = 'Change User Role';
+        
+        const modalContent = template.content.cloneNode(true);
+        document.getElementById('modal-body').innerHTML = '';
+        document.getElementById('modal-body').appendChild(modalContent);
+        
+        // Set current role in dropdown
+        const roleSelect = document.getElementById('role-select');
+        roleSelect.value = user.role;
+        
+        // Open modal
+        openModal();
+        
+        // Handle form submission
+        document.getElementById('change-role-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const newRole = roleSelect.value;
+            
+            // Submit role change
+            fetch('/api/user/change-role', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId: user._id,
+                    role: newRole
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    closeModal();
+                    showToast('success', 'Role Changed', `User role changed to ${formatRole(newRole)}`);
+                    fetchUsers(); // Refresh the list
+                } else {
+                    showToast('error', 'Error', data.message || 'Failed to change user role');
+                }
+            })
+            .catch(error => {
+                console.error('Error changing role:', error);
+                showToast('error', 'Error', 'Failed to change user role. Please try again later.');
+            });
+        });
+        
+        // Handle cancel button
+        document.getElementById('cancel-role-change').addEventListener('click', closeModal);
+    }
+
+    // Format role for display
+    function formatRole(role) {
+        switch(role) {
+            case '1st-line': return '1st Line Support';
+            case '2nd-line': return '2nd Line Support';
+            case 'admin': return 'Administrator';
+            default: return 'User';
+        }
+    }
+
+    // Toggle user's admin status
+    function toggleAdminStatus(userId) {
+        fetch('/api/org/toggle-admin', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ userId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                closeModal();
+                showToast('success', 'Success', data.message);
+                fetchUsers(); // Refresh the list
+            } else {
+                showToast('error', 'Error', data.message || 'Failed to update user status');
+            }
+        })
+        .catch(error => {
+            console.error('Error toggling admin status:', error);
+            showToast('error', 'Error', 'Failed to update user status. Please try again later.');
+        });
     }
 
     // Open toggle admin confirmation
@@ -145,31 +252,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Toggle user's admin status
-    function toggleAdminStatus(userId) {
-        fetch('/api/org/toggle-admin', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ userId })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.message) {
-                closeModal();
-                showToast('success', 'Success', data.message);
-                fetchUsers(); // Refresh the list
-            } else {
-                showToast('error', 'Error', data.message || 'Failed to update user status');
-            }
-        })
-        .catch(error => {
-            console.error('Error toggling admin status:', error);
-            showToast('error', 'Error', 'Failed to update user status. Please try again later.');
-        });
-    }
-
     // Open delete user confirmation
     function openDeleteUserConfirmation(user) {
         const template = document.getElementById('delete-user-confirmation-template');

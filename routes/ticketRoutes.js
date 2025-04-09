@@ -16,8 +16,10 @@ const createTicketForUser = require('../controllers/ticket/createTicketForUser')
 const getTickets = require('../controllers/ticket/getTickets');
 const getTicketById = require('../controllers/ticket/getTicketById');
 const updateTicket = require('../controllers/ticket/updateTicket');
-const deleteTicket = require('../controllers/ticket/deleteTicket'); // New controller
+const deleteTicket = require('../controllers/ticket/deleteTicket');
 const getTicketStats = require('../controllers/ticket/getTicketStats');
+const assignTicket = require('../controllers/ticket/assignTicket');
+const getTicketHistory = require('../controllers/ticket/getTicketHistory');
 
 // Apply user middleware to all routes
 router.use(getUser);
@@ -29,6 +31,8 @@ router.get('/list', getTickets);
 router.get('/stats', getTicketStats);
 router.get('/:ticketId', getTicketById);
 router.put('/:ticketId', updateTicket);
-router.delete('/:ticketId', isAdmin, deleteTicket); // New route for ticket deletion
+router.delete('/:ticketId', isAdmin, deleteTicket);
+router.post('/:ticketId/assign', isAdmin, assignTicket);
+router.get('/:ticketId/history', getTicketHistory);
 
 module.exports = router;

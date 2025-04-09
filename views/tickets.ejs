@@ -14,6 +14,7 @@
                     <option value="in-progress">In Progress</option>
                     <option value="resolved">Resolved</option>
                     <option value="closed">Closed</option>
+                    <option value="canceled">Canceled</option>
                 </select>
                 
                 <select id="priority-filter" class="filter-select">
@@ -26,12 +27,19 @@
                 <select id="category-filter" class="filter-select">
                     <option value="all">All Categories</option>
                 </select>
+    
+                <% if (isAdmin) { %>
+                <select id="assigned-filter" class="filter-select">
+                    <option value="all">All Agents</option>
+                    <option value="unassigned">Unassigned</option>
+                </select>
+                <% } %>
             </div>
             
             <div class="search-tickets">
                 <input type="text" id="ticket-search" placeholder="Search tickets...">
-                <button class="search-button">
-                    <i class="fas fa-search"></i>
+                <button class="search-button" id="clear-search">
+                    <i class="fas fa-times"></i>
                 </button>
             </div>
             
@@ -54,6 +62,9 @@
                             <th class="sortable" data-sort="user">Submitted By <i class="fas fa-sort"></i></th>
                         <% } %>
                         <th class="sortable" data-sort="category">Category <i class="fas fa-sort"></i></th>
+                        <% if (isAdmin) { %>
+                            <th class="sortable" data-sort="assignedTo">Assigned To <i class="fas fa-sort"></i></th>
+                        <% } %>
                         <th class="sortable" data-sort="priority">Priority <i class="fas fa-sort"></i></th>
                         <th class="sortable" data-sort="status">Status <i class="fas fa-sort"></i></th>
                         <th class="sortable" data-sort="createdAt">Created <i class="fas fa-sort"></i></th>
@@ -99,6 +110,9 @@
             <td class="ticket-user"></td>
         <% } %>
         <td class="ticket-category"></td>
+        <% if (isAdmin) { %>
+            <td class="ticket-assigned-to"></td>
+        <% } %>
         <td class="ticket-priority">
             <span class="priority-badge"></span>
         </td>
@@ -221,5 +235,7 @@
 <% } %>
 
 <script src="/js/tickets.js"></script>
+<script src="/js/ticket-search.js"></script>
+
 
 <%- include('layout-end') %>

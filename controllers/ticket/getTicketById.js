@@ -6,6 +6,7 @@ module.exports = async (req, res) => {
     const { ticketId } = req.params;
     const userId = req.user._id;
     const isAdmin = req.user.role === 'admin';
+    const isSupport = req.user.role === '1st-line' || req.user.role === '2nd-line';
     
     if (!ticketId) {
         return res.status(400).json({ message: 'Ticket ID is required' });
@@ -23,13 +24,16 @@ module.exports = async (req, res) => {
             _id: ticketId
         })
             .populate('user', 'email')
-            .populate('category', 'name');
+            .populate('category', 'name')
+            
         if (!ticket) {
             return res.status(404).json({ message: 'Ticket not found or not accessible' });
         }
         
-        // Check if user has access to this ticket
-        if (!isAdmin && ticket.user._id.toString() !== userId.toString()) {
+        const isTicketOwner = ticket.user._id.toString() === userId.toString();
+        const isTicketAssignee = ticket.assignedTo && ticket.assignedTo._id.toString() === userId.toString();
+        
+        if (!isAdmin && !isTicketOwner && !isTicketAssignee) {
             return res.status(403).json({ message: 'Not authorized to access this ticket' });
         }
         
@@ -47,4 +51,4 @@ module.exports = async (req, res) => {
         console.error("Error retrieving ticket.\n\n", error);
         return res.status(500).json({ message: 'Internal server error' });
     }
-}
+};

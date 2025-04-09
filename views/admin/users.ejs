@@ -47,6 +47,9 @@
         <td class="user-profession"></td>
         <td class="user-status"></td>
         <td class="user-actions">
+            <button class="btn btn-sm btn-secondary change-role" title="Change Role">
+                <i class="fas fa-user-cog"></i>
+            </button>
             <button class="btn btn-sm btn-primary toggle-admin" title="Toggle Admin Status">
                 <i class="fas fa-user-shield"></i>
             </button>
@@ -68,6 +71,26 @@
         <div class="form-actions">
             <button type="button" class="btn btn-secondary" id="cancel-user">Cancel</button>
             <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+    </form>
+</template>
+
+<!-- Change role modal template -->
+<template id="change-role-form-template">
+    <form id="change-role-form" class="modal-form">
+        <div class="form-group">
+            <label for="role-select">Select Role</label>
+            <select id="role-select" name="role" required>
+                <option value="user">Regular User</option>
+                <option value="1st-line">1st Line Support</option>
+                <option value="2nd-line">2nd Line Support</option>
+                <option value="admin">Administrator</option>
+            </select>
+        </div>
+        
+        <div class="form-actions">
+            <button type="button" class="btn btn-secondary" id="cancel-role-change">Cancel</button>
+            <button type="submit" class="btn btn-primary">Change Role</button>
         </div>
     </form>
 </template>

@@ -4,6 +4,7 @@ const Organization = require('../../models/Organization');
 module.exports = async (req, res) => {
     const userId = req.user._id;
     const isAdmin = req.user.role === 'admin';
+    const isSupport = req.user.role === '1st-line' || req.user.role === '2nd-line';
     
     try {
         // Check if user belongs to an organization
@@ -22,14 +23,33 @@ module.exports = async (req, res) => {
             tickets = await Ticket.find({ _id: { $in: userOrg.tickets } })
                 .populate('user', 'email')
                 .populate('category', 'name')
+                .populate('assignedTo', 'email')
                 .sort({ createdAt: -1 });
-        } else {
-            // Regular user - only get their tickets within the organization
+        } 
+        // If support agent, get tickets they created or are assigned to them
+        else if (isSupport) {
+            tickets = await Ticket.find({
+                $and: [
+                    { _id: { $in: userOrg.tickets } },
+                    { $or: [
+                        { user: userId },
+                        { assignedTo: userId }
+                    ]}
+                ]
+            })
+                .populate('user', 'email')
+                .populate('category', 'name')
+                .populate('assignedTo', 'email')
+                .sort({ createdAt: -1 });
+        } 
+        // Regular user - only get their tickets
+        else {
             tickets = await Ticket.find({ 
                 user: userId,
                 _id: { $in: userOrg.tickets }
             })
                 .populate('category', 'name')
+                .populate('assignedTo', 'email')
                 .sort({ createdAt: -1 });
         }
         
@@ -42,4 +62,4 @@ module.exports = async (req, res) => {
         console.error("Error retrieving tickets.\n\n", error);
         return res.status(500).json({ message: 'Internal server error' });
     }
-}
+};

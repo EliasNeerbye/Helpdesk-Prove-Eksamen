@@ -9,6 +9,8 @@ module.exports = async (req, res) => {
     const { ticketId } = req.params;
     const { content } = req.body;
     const userId = req.user._id;
+    const isAdmin = req.user.role === 'admin';
+    const isSupport = req.user.role === '1st-line' || req.user.role === '2nd-line';
     
     if (!ticketId || !content) {
         return res.status(400).json({ message: 'Ticket ID and comment content are required' });
@@ -24,15 +26,18 @@ module.exports = async (req, res) => {
         // Verify the ticket exists and belongs to the user's organization
         const ticket = await Ticket.findOne({
             _id: ticketId,
+            organization: userOrg._id
         });
         
         if (!ticket) {
             return res.status(404).json({ message: 'Ticket not found or not accessible' });
         }
         
-        // Verify user has access to this ticket (is admin or ticket owner)
-        const isAdmin = req.user.role === 'admin';
-        if (!isAdmin && ticket.user.toString() !== userId.toString()) {
+        // Verify user has access to this ticket (is admin, ticket owner, or assigned agent)
+        const isTicketOwner = ticket.user.toString() === userId.toString();
+        const isTicketAssignee = ticket.assignedTo && ticket.assignedTo.toString() === userId.toString();
+        
+        if (!isAdmin && !isTicketOwner && !isTicketAssignee) {
             return res.status(403).json({ message: 'Not authorized to comment on this ticket' });
         }
         
@@ -100,4 +105,4 @@ module.exports = async (req, res) => {
         console.error("Error adding comment.\n\n", error);
         return res.status(500).json({ message: 'Internal server error' });
     }
-}
+};

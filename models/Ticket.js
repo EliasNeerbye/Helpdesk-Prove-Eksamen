@@ -34,6 +34,14 @@ const TicketSchema = new Schema({
         ref: 'Category',
         required: true,
     },
+    assignedTo: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+    },
+    assignedRole: {
+        type: String,
+        enum: ['1st-line', '2nd-line'],
+    },
     screenshots: [{
         type: String,
     }],

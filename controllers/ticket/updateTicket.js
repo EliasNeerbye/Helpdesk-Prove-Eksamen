@@ -7,14 +7,15 @@ module.exports = async (req, res) => {
     const { status, priority } = req.body;
     const userId = req.user._id;
     const isAdmin = req.user.role === 'admin';
+    const isSupport = req.user.role === '1st-line' || req.user.role === '2nd-line';
     
     if (!ticketId) {
         return res.status(400).json({ message: 'Ticket ID is required' });
     }
     
-    // Check if user is an admin
-    if (!isAdmin) {
-        return res.status(403).json({ message: 'Only admins can update ticket status and priority' });
+    // Check if user is an admin or support
+    if (!isAdmin && !isSupport) {
+        return res.status(403).json({ message: 'Only admins and support staff can update ticket status and priority' });
     }
     
     try {
@@ -33,8 +34,13 @@ module.exports = async (req, res) => {
         if (!ticket) {
             return res.status(404).json({ message: 'Ticket not found or not accessible' });
         }
+
+        // Verify if support staff is assigned to this ticket
+        if (isSupport && (!ticket.assignedTo || ticket.assignedTo.toString() !== userId.toString())) {
+            return res.status(403).json({ message: 'You must be assigned to this ticket to update it' });
+        }
         
-        // Update fields
+        // Rest of the code remains the same...
         const updateData = {};
         
         if (status) {
@@ -74,7 +80,6 @@ module.exports = async (req, res) => {
             );
         }
         
-        // Update the ticket
         const updatedTicket = await Ticket.findByIdAndUpdate(
             ticketId,
             updateData,

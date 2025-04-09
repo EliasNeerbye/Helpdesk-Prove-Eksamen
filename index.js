@@ -78,6 +78,8 @@ const ticketRoutes = require('./routes/ticketRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const commentRoutes = require('./routes/commentRoutes');
 const professionRoutes = require('./routes/professionRoutes');
+const userRoutes = require('./routes/userRoutes');
+const feedbackRoutes = require('./routes/feedbackRoutes');
 
 app.use("/api/auth", authRoutes);
 app.use("/api/org", orgRoutes);
@@ -86,6 +88,8 @@ app.use("/api/ticket", ticketRoutes);
 app.use("/api/category", categoryRoutes);
 app.use("/api/comment", commentRoutes);
 app.use("/api/profession", professionRoutes);
+app.use("/api/user", userRoutes);
+app.use("/api/feedback", feedbackRoutes);
 
 const pageRoutes = require('./routes/pageRoutes');
 app.use('/', pageRoutes);

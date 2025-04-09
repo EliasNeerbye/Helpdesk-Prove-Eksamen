@@ -1,6 +1,7 @@
 const Ticket = require('../../models/Ticket');
 const Comment = require('../../models/Comment');
 const TicketHistory = require('../../models/TicketHistory');
+const Feedback = require('../../models/Feedback');
 const Organization = require('../../models/Organization');
 
 module.exports = async (req, res) => {
@@ -33,11 +34,19 @@ module.exports = async (req, res) => {
             return res.status(404).json({ message: 'Ticket not found or not accessible' });
         }
         
+        // Check if ticket is resolved or closed before deletion
+        if (ticket.status !== 'resolved' && ticket.status !== 'closed') {
+            return res.status(400).json({ message: 'Only resolved or closed tickets can be deleted' });
+        }
+        
         // Delete all comments related to the ticket
         await Comment.deleteMany({ ticket: ticketId });
         
         // Delete ticket history
         await TicketHistory.deleteMany({ ticket: ticketId });
+        
+        // Delete feedback related to the ticket
+        await Feedback.deleteMany({ ticket: ticketId });
         
         // Remove ticket from organization
         await Organization.updateOne(

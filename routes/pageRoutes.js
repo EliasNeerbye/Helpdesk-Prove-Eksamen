@@ -58,7 +58,7 @@ router.get('/tickets', getUser, async (req, res) => {
         res.render('tickets', { 
             title: 'Tickets',
             user: req.user,
-            isAdmin: req.user.role === 'admin'
+            isAdmin: req.user.role === 'admin',
         });
     } catch (error) {
         console.error("Error rendering tickets page:", error);
@@ -73,11 +73,13 @@ router.get('/tickets', getUser, async (req, res) => {
 // Single ticket view
 router.get('/tickets/:ticketId', getUser, async (req, res) => {
     try {
+        const isSupport = req.user.role === '1st-line' || req.user.role === '2nd-line';
         res.render('ticket-detail', { 
             title: 'Ticket Details',
             user: req.user,
             isAdmin: req.user.role === 'admin',
-            ticketId: req.params.ticketId
+            ticketId: req.params.ticketId,
+            isSupport
         });
     } catch (error) {
         console.error("Error rendering ticket detail:", error);

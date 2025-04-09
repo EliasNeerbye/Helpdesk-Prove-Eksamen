@@ -226,5 +226,5 @@ function loadSupportPerformanceMetrics() {
 
 function calculateRate(part, total) {
     if (!total) return 0;
-    return Math.round((part / total) * 100);
+    return (part / total) * 100;
 }

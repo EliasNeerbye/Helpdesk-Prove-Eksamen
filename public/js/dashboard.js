@@ -83,7 +83,14 @@ function showCreateOrgButton() {
                         },
                         body: JSON.stringify(data)
                     })
-                    .then(response => response.json())
+                    .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
                     .then(data => {
                         if (data.message === 'Organization created successfully') {
                             // Close modal
@@ -217,7 +224,14 @@ function showOrganizationRequiredMessage() {
 function loadSummaryCounts() {
     // My tickets count
     fetch('/api/ticket/list')
-        .then(response => response.json())
+        .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
         .then(data => {
             if (data.tickets) {
                 document.getElementById('my-tickets-count').textContent = data.tickets.length;
@@ -243,14 +257,28 @@ function loadSummaryCounts() {
     if (isAdmin) {
         // Open tickets count
         fetch('/api/ticket/stats')
-            .then(response => response.json())
+            .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
             .then(data => {
                 if (data.stats) {
                     document.getElementById('open-tickets-count').textContent = data.stats.byStatus.open;
                     
                     // Total users count - fetch from organization users
                     fetch('/api/org/users')
-                        .then(response => response.json())
+                        .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
                         .then(userData => {
                             if (userData.users) {
                                 document.getElementById('total-users-count').textContent = userData.users.length;
@@ -277,7 +305,14 @@ function loadRecentTickets() {
     
     // First check if user has a profile
     fetch('/api/profile/get')
-        .then(response => response.json())
+        .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
         .then(profileData => {
             const hasProfile = profileData.profile != null;
             
@@ -295,7 +330,14 @@ function loadRecentTickets() {
             
             // If has profile, continue to load tickets
             fetch('/api/ticket/list')
-                .then(response => response.json())
+                .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
                 .then(data => {
                     if (data.tickets && data.tickets.length > 0) {
                         // Sort by creation date (newest first)
@@ -372,7 +414,14 @@ function loadTicketStats() {
     const statsContainer = document.getElementById('ticket-stats');
     
     fetch('/api/ticket/stats')
-        .then(response => response.json())
+        .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
         .then(data => {
             if (data.stats) {
                 const statsData = data.stats;
@@ -463,7 +512,14 @@ function loadActivityFeed() {
     
     // First check if user has a profile
     fetch('/api/profile/get')
-        .then(response => response.json())
+        .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
         .then(profileData => {
             const hasProfile = profileData.profile != null;
             
@@ -481,7 +537,14 @@ function loadActivityFeed() {
             
             // Here we're using the ticket history endpoint, but filtering for the current user's activities
             fetch('/api/ticket/list')
-                .then(response => response.json())
+                .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
                 .then(data => {
                     if (data.tickets && data.tickets.length > 0) {
                         // Get the most recent 5 tickets for the activity feed
@@ -492,7 +555,14 @@ function loadActivityFeed() {
                         // Load history for each ticket to build activity feed
                         Promise.all(recentTickets.map(ticket => 
                             fetch(`/api/ticket/${ticket._id}`)
-                                .then(response => response.json())
+                                .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
                                 .catch(error => {
                                     console.error(`Error fetching ticket ${ticket._id}:`, error);
                                     return null;

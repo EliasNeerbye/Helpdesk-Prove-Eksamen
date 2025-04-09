@@ -122,7 +122,14 @@ document.addEventListener('DOMContentLoaded', function() {
         if (loadingSpinner) loadingSpinner.style.display = 'block';
         
         fetch('/api/ticket/list')
-            .then(response => response.json())
+            .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
             .then(data => {
                 if (data.tickets && Array.isArray(data.tickets)) {
                     allTickets = data.tickets;

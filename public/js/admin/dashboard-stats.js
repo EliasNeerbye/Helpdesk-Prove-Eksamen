@@ -8,7 +8,14 @@ function loadRoleBasedStats() {
     if (!statsContainer) return;
     
     fetch('/api/ticket/stats')
-        .then(response => response.json())
+        .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
         .then(data => {
             if (data.stats && data.stats.byRole) {
                 const roleStats = data.stats.byRole;
@@ -136,7 +143,14 @@ function loadSupportPerformanceMetrics() {
     if (!performanceContainer) return;
     
     fetch('/api/ticket/stats')
-        .then(response => response.json())
+        .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
         .then(data => {
             if (data.stats && data.stats.byRole) {
                 const roleStats = data.stats.byRole;

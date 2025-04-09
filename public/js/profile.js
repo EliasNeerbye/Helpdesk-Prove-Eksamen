@@ -170,7 +170,14 @@ function createProfile() {
         },
         body: JSON.stringify(formData)
     })
-    .then(response => response.json())
+    .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
     .then(data => {
         if (data.message === 'Profile created successfully') {
             showToast('success', 'Success', 'Profile created successfully');
@@ -207,7 +214,14 @@ function updateProfile() {
         },
         body: JSON.stringify(formData)
     })
-    .then(response => response.json())
+    .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
     .then(data => {
         if (data.message === 'Profile updated successfully') {
             showToast('success', 'Success', 'Profile updated successfully');
@@ -249,7 +263,14 @@ function uploadProfilePhoto(file) {
         method: 'PUT',
         body: formData
     })
-    .then(response => response.json())
+    .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
     .then(data => {
         if (data.message === 'Profile updated successfully') {
             // Update profile image on page
@@ -321,7 +342,14 @@ function deleteProfile() {
             'Content-Type': 'application/json'
         }
     })
-    .then(response => response.json())
+    .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
     .then(data => {
         if (data.message === 'Profile deleted successfully') {
             // Close modal
@@ -350,7 +378,14 @@ function deleteProfile() {
  */
 function fetchProfileData() {
     return fetch('/api/profile/get')
-        .then(response => response.json())
+        .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
         .catch(error => {
             console.error('Error fetching profile:', error);
             throw error;

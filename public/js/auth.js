@@ -25,7 +25,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 body: JSON.stringify({ email, password })
             })
-            .then(response => response.json())
+            .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
             .then(data => {
                 if (data.message === 'Login successful') {
                     window.location.href = '/dashboard';
@@ -87,7 +94,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 body: JSON.stringify({ email, password, checkPassword })
             })
-            .then(response => response.json())
+            .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
             .then(data => {
                 if (data.message === 'User created successfully') {
                     window.location.href = '/dashboard';

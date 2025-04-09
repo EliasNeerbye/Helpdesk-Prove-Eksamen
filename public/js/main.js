@@ -28,7 +28,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     'Content-Type': 'application/json'
                 }
             })
-            .then(response => response.json())
+            .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
             .then(data => {
                 if (data.message === 'Logout successful') {
                     window.location.href = '/login';
@@ -240,7 +247,14 @@ function openCreateTicketModal() {
             },
             body: JSON.stringify(formData)
         })
-        .then(response => response.json())
+        .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
         .then(data => {
             if (data.message === 'Ticket created successfully') {
                 closeModal();
@@ -291,7 +305,14 @@ function openStatsModal() {
     
     // Fetch ticket stats
     fetch('/api/ticket/stats')
-        .then(response => response.json())
+        .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
         .then(data => {
             if (data.stats) {
                 const statsData = data.stats;
@@ -373,7 +394,14 @@ function openStatsModal() {
  */
 function fetchCategories() {
     return fetch('/api/category/list')
-        .then(response => response.json())
+        .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
         .then(data => {
             if (data.categories) {
                 return data.categories;

@@ -47,7 +47,14 @@ function updateDataStates() {
 
 function checkForUpdates(ticketId) {
     fetch(`/api/ticket/${ticketId}`)
-        .then(response => response.json())
+        .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
         .then(data => {
             if (data.ticket) {
                 if (data.ticket.status !== lastStatus || data.ticket.priority !== lastPriority) {
@@ -66,7 +73,14 @@ function checkForUpdates(ticketId) {
         });
     
     fetch(`/api/ticket/${ticketId}/history`)
-        .then(response => response.json())
+        .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
         .then(data => {
             if (data.history && data.history.length !== lastHistoryCount && lastHistoryCount > 0) {
                 loadTicketHistory(ticketId);

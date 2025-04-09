@@ -32,7 +32,14 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!userSelect) return;
         
         fetch('/api/org/users')
-            .then(response => response.json())
+            .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
             .then(data => {
                 if (data.users && Array.isArray(data.users)) {
                     userSelect.innerHTML = '<option value="">Select a user</option>';
@@ -63,7 +70,14 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!categorySelect) return;
         
         fetch('/api/category/list')
-            .then(response => response.json())
+            .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
             .then(data => {
                 if (data.categories) {
                     categorySelect.innerHTML = '<option value="">Select a category</option>';
@@ -106,7 +120,14 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify(data)
         })
-        .then(response => response.json())
+        .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
         .then(data => {
             if (data.message === 'Ticket created successfully for user') {
                 closeModal();

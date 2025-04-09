@@ -85,7 +85,14 @@ function deleteTicket(ticketId) {
             'Content-Type': 'application/json'
         }
     })
-    .then(response => response.json())
+    .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
     .then(data => {
         if (data.message === 'Ticket deleted successfully') {
             closeModal();
@@ -118,14 +125,28 @@ function addComment(ticketId) {
         },
         body: JSON.stringify({ content })
     })
-    .then(response => response.json())
+    .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
     .then(data => {
         if (data.message === 'Comment added successfully') {
             document.getElementById('comment-content').value = '';
             showToast('success', 'Added', 'Comment added successfully');
             
             fetch(`/api/comment/${ticketId}/list`)
-                .then(response => response.json())
+                .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
                 .then(commentData => {
                     if (commentData.comments) {
                         renderComments(commentData.comments);
@@ -146,7 +167,14 @@ function addComment(ticketId) {
 
 function loadTicketDetails(ticketId) {
     fetch(`/api/ticket/${ticketId}`)
-        .then(response => response.json())
+        .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
         .then(data => {
             if (data.ticket) {
                 renderTicketDetails(data.ticket);
@@ -238,7 +266,14 @@ function loadTicketHistory(ticketId) {
     const historyContainer = document.getElementById('history-container');
     
     fetch(`/api/ticket/${ticketId}/history`)
-        .then(response => response.json())
+        .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
         .then(data => {
             if (data.history && data.history.length > 0) {
                 renderHistory(data.history);
@@ -362,7 +397,14 @@ function updateTicket(ticketId, updateData) {
         },
         body: JSON.stringify(updateData)
     })
-    .then(response => response.json())
+    .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
     .then(data => {
         if (data.message === 'Ticket updated successfully') {
             showToast('success', 'Updated', 'Ticket updated successfully');
@@ -437,7 +479,14 @@ function openAssignModal(ticketId) {
 
 function loadSupportAgents() {
     fetch('/api/org/users')
-        .then(response => response.json())
+        .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
         .then(data => {
             if (data.users) {
                 const agentSelector = document.getElementById('agent-selector');
@@ -484,7 +533,14 @@ function assignTicket(ticketId, userId, role) {
         },
         body: JSON.stringify({ userId, role })
     })
-    .then(response => response.json())
+    .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
     .then(data => {
         if (data.message === 'Ticket assigned successfully') {
             closeModal();
@@ -506,7 +562,14 @@ function loadFeedbackStatus(ticketId) {
     if (!feedbackSection) return;
 
     fetch(`/api/ticket/${ticketId}`)
-        .then(response => response.json())
+        .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
         .then(data => {
             if (data.ticket) {
                 const currentUserId = document.querySelector('meta[name="user-id"]')?.content;
@@ -672,7 +735,14 @@ function submitFeedback(ticketId) {
         },
         body: JSON.stringify({ rating, comment })
     })
-    .then(response => response.json())
+    .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
     .then(data => {
         if (data.message === 'Feedback submitted successfully') {
             showToast('success', 'Thank You', 'Your feedback has been submitted');
@@ -764,7 +834,14 @@ function submitModalFeedback(ticketId, rating, comment) {
         },
         body: JSON.stringify({ rating, comment })
     })
-    .then(response => response.json())
+    .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
     .then(data => {
         if (data.message === 'Feedback submitted successfully') {
             closeModal();
@@ -844,7 +921,14 @@ function showFeedbackPrompt(ticketId) {
 
 function checkForUpdates(ticketId) {
     fetch(`/api/ticket/${ticketId}`)
-        .then(response => response.json())
+        .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
         .then(data => {
             if (data.ticket) {
                 const statusChanged = data.ticket.status !== lastStatus;
@@ -881,7 +965,14 @@ function checkForUpdates(ticketId) {
         });
     
     fetch(`/api/ticket/${ticketId}/history`)
-        .then(response => response.json())
+        .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
         .then(data => {
             if (data.history && data.history.length !== lastHistoryCount && lastHistoryCount > 0) {
                 loadTicketHistory(ticketId);

@@ -300,7 +300,14 @@ document.addEventListener('DOMContentLoaded', function() {
      */
     function loadTickets() {
         fetch('/api/ticket/list')
-            .then(response => response.json())
+            .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
             .then(data => {
                 if (data.tickets && data.tickets.length > 0) {
                     state.tickets = data.tickets;
@@ -328,7 +335,14 @@ document.addEventListener('DOMContentLoaded', function() {
      */
     function loadCategories() {
         fetch('/api/category/list')
-            .then(response => response.json())
+            .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
             .then(data => {
                 if (data.categories && elements.categoryFilter) {
                     // Add categories to dropdown
@@ -607,7 +621,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 'Content-Type': 'application/json'
             }
         })
-        .then(response => response.json())
+        .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
         .then(data => {
             if (data.message === 'Ticket deleted successfully') {
                 // Close modal

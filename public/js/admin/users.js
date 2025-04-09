@@ -11,7 +11,14 @@ document.addEventListener('DOMContentLoaded', () => {
         usersContainer.style.display = 'none';
         
         fetch('/api/org/users')
-            .then(response => response.json())
+            .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
             .then(data => {
                 if (data.users && Array.isArray(data.users)) {
                     usersList.innerHTML = '';
@@ -151,7 +158,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     role: newRole
                 })
             })
-            .then(response => response.json())
+            .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
             .then(data => {
                 if (data.message) {
                     closeModal();
@@ -190,7 +204,14 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             body: JSON.stringify({ userId })
         })
-        .then(response => response.json())
+        .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
         .then(data => {
             if (data.message) {
                 closeModal();
@@ -274,7 +295,14 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch(`/api/org/user/${userId}`, {
             method: 'DELETE'
         })
-        .then(response => response.json())
+        .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
         .then(data => {
             if (data.message) {
                 closeModal();
@@ -315,7 +343,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     email: formData.get('email')
                 })
             })
-            .then(response => response.json())
+            .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
             .then(data => {
                 if (data.message) {
                     closeModal();

@@ -31,7 +31,14 @@ function loadCategories() {
     const emptyCategories = document.getElementById('empty-categories');
     
     fetch('/api/category/list')
-        .then(response => response.json())
+        .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
         .then(data => {
             // Hide loading
             categoriesLoading.style.display = 'none';
@@ -111,7 +118,14 @@ function renderCategories(categories) {
  */
 function countTicketsForCategory(categoryId) {
     return fetch('/api/ticket/list')
-        .then(response => response.json())
+        .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
         .then(data => {
             if (data.tickets) {
                 return data.tickets.filter(ticket => ticket.category._id === categoryId).length;
@@ -185,7 +199,14 @@ function createCategory(formData) {
         },
         body: JSON.stringify(formData)
     })
-    .then(response => response.json())
+    .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
     .then(data => {
         if (data.message === 'Category created successfully') {
             // Close modal
@@ -219,7 +240,14 @@ function updateCategory(categoryId, formData) {
         },
         body: JSON.stringify(formData)
     })
-    .then(response => response.json())
+    .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
     .then(data => {
         if (data.message === 'Category updated successfully') {
             // Close modal
@@ -283,7 +311,14 @@ function deleteCategory(categoryId) {
             'Content-Type': 'application/json'
         }
     })
-    .then(response => response.json())
+    .then(response => {
+    if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.message || 'An error occurred');
+        });
+    }
+    return response.json();
+})
     .then(data => {
         if (data.message === 'Category deleted successfully') {
             // Close modal

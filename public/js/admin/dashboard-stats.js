@@ -77,7 +77,7 @@ function loadRoleBasedStats() {
                                         </div>
                                         <div class="stat-item">
                                             <span class="stat-label">Resolution Rate:</span>
-                                            <span class="stat-value">${calculateRate(roleStats['2nd-line'].resolved + roleStats['2st-line'].closed, roleStats['2nd-line'].total)}%</span>
+                                            <span class="stat-value">${calculateRate(roleStats['2nd-line'].resolved + roleStats['2nd-line'].closed, roleStats['2nd-line'].total)}%</span>
                                         </div>
                                     </div>
                                 </div>

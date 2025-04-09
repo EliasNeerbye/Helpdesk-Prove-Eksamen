@@ -4,7 +4,7 @@ Spiceworks but worse
 
 ## ER Diagram
 
-<img src="public/assets/images/ER-Diagram.png">
+<img src="public/assets/images/ER-diagram.png">
 
 ## Cisco Packet Tracer
 

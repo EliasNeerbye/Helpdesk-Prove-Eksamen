@@ -489,6 +489,9 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Category
             row.querySelector('.ticket-category').textContent = ticket.category?.name;
+
+            // Assigned To
+            row.querySelector('.ticket-assigned-to').textContent = ticket.assignedTo?.email || 'Unassigned';
             
             // Priority
             const priorityBadge = row.querySelector('.priority-badge');

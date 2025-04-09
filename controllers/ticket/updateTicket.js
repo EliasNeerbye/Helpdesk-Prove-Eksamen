@@ -28,7 +28,6 @@ module.exports = async (req, res) => {
         // Check if ticket exists and belongs to the user's organization
         const ticket = await Ticket.findOne({
             _id: ticketId,
-            _id: { $in: userOrg.tickets }
         });
         
         if (!ticket) {

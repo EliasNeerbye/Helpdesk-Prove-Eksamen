@@ -50,7 +50,7 @@ function checkForUpdates(ticketId) {
         .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error','Error',err.message || 'An error occurred');
         });
     }
     return response.json();
@@ -76,7 +76,7 @@ function checkForUpdates(ticketId) {
         .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error','Error',err.message || 'An error occurred');
         });
     }
     return response.json();

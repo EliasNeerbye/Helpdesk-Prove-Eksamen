@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showTaost('error','Error',err.message || 'An error occurred');
         });
     }
     return response.json();

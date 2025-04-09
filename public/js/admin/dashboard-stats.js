@@ -11,7 +11,7 @@ function loadRoleBasedStats() {
         .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error','Error',err.message || 'An error occurred');
         });
     }
     return response.json();
@@ -146,7 +146,7 @@ function loadSupportPerformanceMetrics() {
         .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error','Error',err.message || 'An error occurred');
         });
     }
     return response.json();

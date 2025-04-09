@@ -88,7 +88,7 @@ function deleteTicket(ticketId) {
     .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error','Error',err.message || 'An error occurred');
         });
     }
     return response.json();
@@ -128,7 +128,7 @@ function addComment(ticketId) {
     .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error','Error',err.message || 'An error occurred');
         });
     }
     return response.json();
@@ -142,7 +142,7 @@ function addComment(ticketId) {
                 .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error','Error',err.message || 'An error occurred');
         });
     }
     return response.json();
@@ -170,7 +170,7 @@ function loadTicketDetails(ticketId) {
         .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error','Error',err.message || 'An error occurred');
         });
     }
     return response.json();
@@ -269,7 +269,7 @@ function loadTicketHistory(ticketId) {
         .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error','Error',err.message || 'An error occurred');
         });
     }
     return response.json();
@@ -400,7 +400,7 @@ function updateTicket(ticketId, updateData) {
     .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error','Error',err.message || 'An error occurred');
         });
     }
     return response.json();
@@ -482,7 +482,7 @@ function loadSupportAgents() {
         .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error','Error',err.message || 'An error occurred');
         });
     }
     return response.json();
@@ -536,7 +536,7 @@ function assignTicket(ticketId, userId, role) {
     .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error','Error',err.message || 'An error occurred');
         });
     }
     return response.json();
@@ -565,7 +565,7 @@ function loadFeedbackStatus(ticketId) {
         .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error','Error',err.message || 'An error occurred');
         });
     }
     return response.json();
@@ -738,7 +738,7 @@ function submitFeedback(ticketId) {
     .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error','Error',err.message || 'An error occurred');
         });
     }
     return response.json();
@@ -837,7 +837,7 @@ function submitModalFeedback(ticketId, rating, comment) {
     .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error','Error',err.message || 'An error occurred');
         });
     }
     return response.json();
@@ -924,7 +924,7 @@ function checkForUpdates(ticketId) {
         .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error','Error',err.message || 'An error occurred');
         });
     }
     return response.json();
@@ -968,7 +968,7 @@ function checkForUpdates(ticketId) {
         .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error','Error',err.message || 'An error occurred');
         });
     }
     return response.json();

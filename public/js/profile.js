@@ -173,7 +173,7 @@ function createProfile() {
     .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error','Error',err.message || 'An error occurred');
         });
     }
     return response.json();
@@ -217,7 +217,7 @@ function updateProfile() {
     .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error','Error',err.message || 'An error occurred');
         });
     }
     return response.json();
@@ -266,7 +266,7 @@ function uploadProfilePhoto(file) {
     .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error','Error',err.message || 'An error occurred');
         });
     }
     return response.json();
@@ -345,7 +345,7 @@ function deleteProfile() {
     .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error','Error',err.message || 'An error occurred');
         });
     }
     return response.json();
@@ -381,7 +381,7 @@ function fetchProfileData() {
         .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error','Error',err.message || 'An error occurred');
         });
     }
     return response.json();

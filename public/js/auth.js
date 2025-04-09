@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showAuthError(err.message || 'An error occurred');
         });
     }
     return response.json();
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showAuthError(err.message || 'An error occurred');
         });
     }
     return response.json();

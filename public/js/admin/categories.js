@@ -34,7 +34,7 @@ function loadCategories() {
         .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error','Error',err.message || 'An error occurred');
         });
     }
     return response.json();
@@ -121,7 +121,7 @@ function countTicketsForCategory(categoryId) {
         .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error','Error',err.message || 'An error occurred');
         });
     }
     return response.json();
@@ -202,7 +202,7 @@ function createCategory(formData) {
     .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error','Error',err.message || 'An error occurred');
         });
     }
     return response.json();
@@ -243,7 +243,7 @@ function updateCategory(categoryId, formData) {
     .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error','Error',err.message || 'An error occurred');
         });
     }
     return response.json();
@@ -314,7 +314,7 @@ function deleteCategory(categoryId) {
     .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error','Error',err.message || 'An error occurred');
         });
     }
     return response.json();

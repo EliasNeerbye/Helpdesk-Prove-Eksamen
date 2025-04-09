@@ -86,7 +86,7 @@ function showCreateOrgButton() {
                     .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error', 'Error', err.message || 'An error occurred');
         });
     }
     return response.json();
@@ -227,7 +227,7 @@ function loadSummaryCounts() {
         .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error', 'Error', err.message || 'An error occurred');
         });
     }
     return response.json();
@@ -260,7 +260,7 @@ function loadSummaryCounts() {
             .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error', 'Error', err.message || 'An error occurred');
         });
     }
     return response.json();
@@ -274,7 +274,7 @@ function loadSummaryCounts() {
                         .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error', 'Error', err.message || 'An error occurred');
         });
     }
     return response.json();
@@ -308,7 +308,7 @@ function loadRecentTickets() {
         .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error', 'Error', err.message || 'An error occurred');
         });
     }
     return response.json();
@@ -333,7 +333,7 @@ function loadRecentTickets() {
                 .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error', 'Error', err.message || 'An error occurred');
         });
     }
     return response.json();
@@ -417,7 +417,7 @@ function loadTicketStats() {
         .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error', 'Error', err.message || 'An error occurred');
         });
     }
     return response.json();
@@ -515,7 +515,7 @@ function loadActivityFeed() {
         .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error', 'Error', err.message || 'An error occurred');
         });
     }
     return response.json();
@@ -540,7 +540,7 @@ function loadActivityFeed() {
                 .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error', 'Error', err.message || 'An error occurred');
         });
     }
     return response.json();
@@ -558,7 +558,7 @@ function loadActivityFeed() {
                                 .then(response => {
     if (!response.ok) {
         return response.json().then(err => {
-            throw new Error(err.message || 'An error occurred');
+            showToast('error', 'Error', err.message || 'An error occurred');
         });
     }
     return response.json();

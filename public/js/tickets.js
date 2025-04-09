@@ -491,7 +491,9 @@ document.addEventListener('DOMContentLoaded', function() {
             row.querySelector('.ticket-category').textContent = ticket.category?.name;
 
             // Assigned To
-            row.querySelector('.ticket-assigned-to').textContent = ticket.assignedTo?.email || 'Unassigned';
+            if (row.querySelector('.ticket-assigned-to')) {
+                row.querySelector('.ticket-assigned-to').textContent = ticket.assignedTo?.email || 'Unassigned';
+            }
             
             // Priority
             const priorityBadge = row.querySelector('.priority-badge');

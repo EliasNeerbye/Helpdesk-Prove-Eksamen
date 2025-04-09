@@ -208,11 +208,13 @@ chmod +x /tmp/pm2-startup-command.sh
 sudo_run bash /tmp/pm2-startup-command.sh
 $PM2_PATH save
 
+node mockdata.js
+log "Mock data script executed. Categories and professions populated."
+
 # Create necessary directories for uploads
 log "Creating upload directories..."
 mkdir -p "$APP_DIR/public/assets/uploads"
 mkdir -p "$APP_DIR/public/assets/uploads/temp"
-mkdir -p "$APP_DIR/public/assets/uploads/comments"
 
 # Set proper permissions
 log "Setting correct file permissions..."

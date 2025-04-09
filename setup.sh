@@ -40,6 +40,13 @@ if [ -z "$SERVER_IP" ]; then
   error "Could not determine server IP address"
 fi
 
+# Get the username for DNS configuration
+read -p "Enter your username/alias for domain (will be used as support.USERNAME.ikt-fag.no): " USER_ALIAS
+if [ -z "$USER_ALIAS" ]; then
+  error "Username/alias is required for DNS configuration"
+fi
+DOMAIN="support.$USER_ALIAS.ikt-fag.no"
+
 # Split IP into parts and increment the last octet
 IFS='.' read -r -a IP_PARTS <<< "$SERVER_IP"
 if [ ${#IP_PARTS[@]} -ne 4 ]; then
@@ -50,6 +57,7 @@ LAST_OCTET=$((IP_PARTS[3] + 1))
 MONGO_HOST="${IP_PARTS[0]}.${IP_PARTS[1]}.${IP_PARTS[2]}.$LAST_OCTET"
 
 log "Server IP: $SERVER_IP"
+log "Domain: $DOMAIN"
 log "MongoDB Host will be set to: $MONGO_HOST"
 
 # Update package lists
@@ -63,6 +71,25 @@ else
   log "Installing Nginx..."
   sudo_run DEBIAN_FRONTEND=noninteractive apt-get install -y nginx
 fi
+
+# Configure UFW
+log "Configuring UFW (Uncomplicated Firewall)..."
+# Check if UFW is installed, install if not
+if ! command -v ufw &> /dev/null; then
+  log "Installing UFW..."
+  sudo_run DEBIAN_FRONTEND=noninteractive apt-get install -y ufw
+fi
+
+# Configure UFW rules
+log "Setting up UFW rules..."
+sudo_run ufw default deny incoming
+sudo_run ufw default allow outgoing
+sudo_run ufw allow ssh
+sudo_run ufw allow http
+sudo_run ufw allow https
+sudo_run ufw allow from $MONGO_HOST to any port 27017  # Allow MongoDB connection from specific IP
+sudo_run ufw --force enable
+log "UFW enabled and configured"
 
 # Check and install Node Version Manager (NVM)
 if [ -d "$HOME/.nvm" ]; then
@@ -144,7 +171,7 @@ SESSION_SECRET=$SESSION_SECRET
 # HTTP Configuration
 HTTP_TYPE=http
 PORT=3000
-FRONTEND_URL=http://$SERVER_IP
+FRONTEND_URL=http://$SERVER_IP,http://$DOMAIN
 EOL
 
 # Install dependencies
@@ -155,10 +182,10 @@ npm install
 log "Configuring Nginx as reverse proxy..."
 NGINX_CONFIG_PATH="/tmp/helpdesk.conf"
 cat > "$NGINX_CONFIG_PATH" << EOL
-# /etc/nginx/sites-available/nodeapp
+# /etc/nginx/sites-available/helpdesk
 server {
     listen 80;
-    server_name $SERVER_IP;
+    server_name $SERVER_IP $DOMAIN;
 
     location / {
         proxy_pass http://127.0.0.1:3000;
@@ -208,6 +235,8 @@ chmod +x /tmp/pm2-startup-command.sh
 sudo_run bash /tmp/pm2-startup-command.sh
 $PM2_PATH save
 
+# Run the mock data script
+log "Running mock data script..."
 node mockdata.js
 log "Mock data script executed. Categories and professions populated."
 
@@ -221,7 +250,7 @@ log "Setting correct file permissions..."
 chmod 755 "$APP_DIR/public/assets/uploads" -R
 
 log "Application setup complete!"
-log "Server should be available at: http://$SERVER_IP"
+log "Server should be available at: http://$SERVER_IP and http://$DOMAIN"
 
 # Display important information
 cat << EOL
@@ -230,6 +259,7 @@ cat << EOL
  HelpDesk Application Deployed!
 ====================================
 - Web Interface: http://$SERVER_IP
+- Domain: http://$DOMAIN
 - Application Directory: $APP_DIR  
 - Logs: Check PM2 logs with 'pm2 logs helpdesk'
 - Restart: 'pm2 restart helpdesk'
@@ -237,11 +267,12 @@ cat << EOL
 Make sure MongoDB is running at $MONGO_HOST:27017!
 
 IMPORTANT NEXT STEPS:
-1. Run the mock data script to populate categories and professions:
-   cd $APP_DIR && node mockdata.js
-
+1. Ensure your domain $DOMAIN is properly configured in DNS
 2. Register a user at http://$SERVER_IP/register
    The first user will be able to create an organization
+
+UFW STATUS:
+$(sudo ufw status)
 ====================================
 
 EOL

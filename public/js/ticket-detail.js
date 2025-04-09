@@ -150,14 +150,12 @@ function loadTicketDetails(ticketId) {
                 document.getElementById('ticket-loading').style.display = 'none';
                 document.getElementById('ticket-info').style.display = 'block';
                 
-                // Check if ticket is resolved to show feedback form
                 if (data.ticket.status === 'resolved') {
                     loadFeedbackStatus(ticketId);
                 }
                 
                 loadTicketHistory(ticketId);
                 
-                // Start polling after initial load is complete
                 if (typeof startPolling === 'function') {
                     startPolling(ticketId);
                 }
@@ -311,7 +309,7 @@ function renderHistory(history) {
 
 function renderTicketDetails(ticket) {
     document.getElementById('ticket-title').textContent = ticket.summary;
-    document.getElementById('ticket-category').textContent = ticket.category.name;
+    document.getElementById('ticket-category').textContent = ticket.category?.name;
     document.getElementById('ticket-created').textContent = formatDate(ticket.createdAt, true);
     
     const statusBadge = document.getElementById('ticket-status-badge');
@@ -325,7 +323,6 @@ function renderTicketDetails(ticket) {
     document.getElementById('ticket-submitted-by').textContent = ticket.user.email;
     document.getElementById('ticket-description').textContent = ticket.description;
     
-    // Display assigned agent if available
     const assignedToElem = document.getElementById('ticket-assigned-to');
     if (assignedToElem) {
         if (ticket.assignedTo) {
@@ -361,7 +358,6 @@ function updateTicket(ticketId, updateData) {
             renderTicketDetails(data.ticket);
             loadTicketHistory(ticketId);
             
-            // Show feedback form if ticket is now resolved
             if (data.ticket.status === 'resolved') {
                 loadFeedbackStatus(ticketId);
             }
@@ -378,10 +374,8 @@ function updateTicket(ticketId, updateData) {
 }
 
 function openAssignModal(ticketId) {
-    // Set modal title
     document.getElementById('modal-title').textContent = 'Assign Ticket';
     
-    // Create modal content
     const modalBody = document.getElementById('modal-body');
     modalBody.innerHTML = `
         <form id="assign-ticket-form" class="modal-form">
@@ -408,13 +402,10 @@ function openAssignModal(ticketId) {
         </form>
     `;
     
-    // Show modal
     openModal();
     
-    // Load support agents
     loadSupportAgents();
     
-    // Handle form submission
     const form = document.getElementById('assign-ticket-form');
     form.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -430,7 +421,6 @@ function openAssignModal(ticketId) {
         assignTicket(ticketId, userId, role);
     });
     
-    // Handle cancel button
     document.getElementById('cancel-assign').addEventListener('click', closeModal);
 }
 
@@ -441,7 +431,6 @@ function loadSupportAgents() {
             if (data.users) {
                 const agentSelector = document.getElementById('agent-selector');
                 
-                // Filter for support agents
                 const supportAgents = data.users.filter(user => 
                     user.role === '1st-line' || user.role === '2nd-line' || user.role === 'admin'
                 );
@@ -459,12 +448,10 @@ function loadSupportAgents() {
                     agentSelector.appendChild(option);
                 });
                 
-                // Update role selector based on selected agent
                 const roleSelector = document.getElementById('role-selector');
                 agentSelector.addEventListener('change', function() {
                     const selectedUser = supportAgents.find(u => u._id === this.value);
                     if (selectedUser) {
-                        // Set default role based on the agent's role
                         if (selectedUser.role === '1st-line' || selectedUser.role === '2nd-line') {
                             roleSelector.value = selectedUser.role;
                         }
@@ -492,7 +479,6 @@ function assignTicket(ticketId, userId, role) {
             closeModal();
             showToast('success', 'Assigned', 'Ticket assigned successfully');
             
-            // Reload ticket details to reflect changes
             loadTicketDetails(ticketId);
         } else {
             showToast('error', 'Error', data.message || 'Failed to assign ticket');
@@ -505,35 +491,39 @@ function assignTicket(ticketId, userId, role) {
 }
 
 function loadFeedbackStatus(ticketId) {
-    // First check if this is the ticket's owner
+    const feedbackSection = document.getElementById('feedback-section');
+    if (!feedbackSection) return;
+
     fetch(`/api/ticket/${ticketId}`)
         .then(response => response.json())
         .then(data => {
             if (data.ticket) {
                 const currentUserId = document.querySelector('meta[name="user-id"]')?.content;
                 const isTicketOwner = currentUserId === data.ticket.user._id;
+                const isAdmin = document.querySelector('meta[name="user-role"]')?.content === 'admin';
+                const isSupport = ['1st-line', '2nd-line'].includes(document.querySelector('meta[name="user-role"]')?.content);
                 
-                // Only show feedback form to ticket owner and only for resolved tickets
-                if (isTicketOwner && data.ticket.status === 'resolved') {
-                    // Check if feedback already exists
+                if (data.ticket.status === 'resolved') {
                     fetch(`/api/feedback/${ticketId}`)
-                        .then(resp => {
-                            // If feedback not found (404), show the form
-                            if (resp.status === 404) {
-                                showFeedbackForm(ticketId);
-                            } else if (resp.ok) {
-                                // Feedback exists, show a note
-                                document.getElementById('feedback-section').innerHTML = `
-                                    <div class="alert alert-success">
-                                        <i class="fas fa-check-circle"></i>
-                                        <span>You've already provided feedback for this ticket.</span>
-                                    </div>
-                                `;
+                        .then(response => {
+                            if (response.status === 404) {
+                                if (isTicketOwner) {
+                                    showFeedbackForm(ticketId);
+                                } else if (isAdmin || isSupport) {
+                                    showFeedbackPendingMessage();
+                                }
+                            } else if (response.ok) {
+                                return response.json().then(feedbackData => {
+                                    showExistingFeedback(feedbackData.feedback);
+                                });
                             }
                         })
                         .catch(err => {
-                            // On error, assume no feedback, show form
-                            showFeedbackForm(ticketId);
+                            if (isTicketOwner) {
+                                showFeedbackForm(ticketId);
+                            } else if (isAdmin || isSupport) {
+                                showFeedbackPendingMessage();
+                            }
                         });
                 }
             }
@@ -541,6 +531,65 @@ function loadFeedbackStatus(ticketId) {
         .catch(error => {
             console.error('Error checking ticket ownership:', error);
         });
+}
+
+function showFeedbackPendingMessage() {
+    const feedbackSection = document.getElementById('feedback-section');
+    if (feedbackSection) {
+        feedbackSection.innerHTML = `
+            <div class="card">
+                <div class="card-header">
+                    <h3>Customer Feedback</h3>
+                </div>
+                <div class="card-body">
+                    <div class="notification-content">
+                        <div class="notification-icon pending-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="notification-message">
+                            <h4>Awaiting Customer Feedback</h4>
+                            <p>The customer has not yet provided feedback on this resolved ticket.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+}
+
+function showExistingFeedback(feedback) {
+    const feedbackSection = document.getElementById('feedback-section');
+    if (feedbackSection) {
+        const stars = '★'.repeat(feedback.rating) + '☆'.repeat(5 - feedback.rating);
+        const ratingClass = feedback.rating >= 4 ? 'high-rating' : 
+                            feedback.rating >= 3 ? 'medium-rating' : 'low-rating';
+        
+        feedbackSection.innerHTML = `
+            <div class="card">
+                <div class="card-header">
+                    <h3>Customer Feedback</h3>
+                </div>
+                <div class="card-body">
+                    <div class="feedback-display">
+                        <div class="feedback-rating ${ratingClass}">
+                            <span class="rating-stars">${stars}</span>
+                            <span class="rating-value">${feedback.rating}/5</span>
+                        </div>
+                        ${feedback.comment ? `
+                        <div class="feedback-comment">
+                            <h4>Additional Comments</h4>
+                            <p>${feedback.comment}</p>
+                        </div>
+                        ` : ''}
+                        <div class="feedback-metadata">
+                            <span>Provided by: ${feedback.user.email}</span>
+                            <span>Date: ${formatDate(feedback.createdAt, true)}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
 }
 
 function showFeedbackForm(ticketId) {
@@ -584,7 +633,6 @@ function showFeedbackForm(ticketId) {
             </div>
         `;
         
-        // Set up form submission
         const form = document.getElementById('feedback-form');
         if (form) {
             form.addEventListener('submit', function(e) {
@@ -611,15 +659,14 @@ function submitFeedback(ticketId) {
         if (data.message === 'Feedback submitted successfully') {
             showToast('success', 'Thank You', 'Your feedback has been submitted');
             
-            // Replace form with confirmation message
-            document.getElementById('feedback-section').innerHTML = `
+            const feedbackSection = document.getElementById('feedback-section');
+            feedbackSection.innerHTML = `
                 <div class="alert alert-success">
                     <i class="fas fa-check-circle"></i>
                     <span>Thank you for your feedback!</span>
                 </div>
             `;
             
-            // Reload ticket details as status may have changed to closed
             loadTicketDetails(ticketId);
         } else {
             showToast('error', 'Error', data.message || 'Failed to submit feedback');
@@ -629,6 +676,189 @@ function submitFeedback(ticketId) {
         console.error('Error:', error);
         showToast('error', 'Error', 'Failed to submit feedback');
     });
+}
+
+function openFeedbackModal(ticketId) {
+    document.getElementById('modal-title').textContent = 'Provide Feedback';
+    
+    const modalBody = document.getElementById('modal-body');
+    modalBody.innerHTML = `
+        <div class="feedback-modal-content">
+            <div class="notification-icon success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="notification-message">
+                <h3>Your ticket has been resolved!</h3>
+                <p>Please take a moment to rate our support and provide feedback.</p>
+            </div>
+            <form id="feedback-modal-form">
+                <div class="form-group">
+                    <label>How would you rate our support?</label>
+                    <div class="rating-container">
+                        <div class="star-rating">
+                            <input type="radio" id="modal-star5" name="rating" value="5" />
+                            <label for="modal-star5"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="modal-star4" name="rating" value="4" />
+                            <label for="modal-star4"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="modal-star3" name="rating" value="3" checked />
+                            <label for="modal-star3"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="modal-star2" name="rating" value="2" />
+                            <label for="modal-star2"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="modal-star1" name="rating" value="1" />
+                            <label for="modal-star1"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="modal-feedback-comment">Additional Comments</label>
+                    <textarea id="modal-feedback-comment" name="comment" placeholder="Share your thoughts about our support..." rows="3"></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="skip-feedback">Skip</button>
+                    <button type="submit" class="btn btn-primary">Submit Feedback</button>
+                </div>
+            </form>
+        </div>
+    `;
+    
+    openModal();
+    
+    document.getElementById('skip-feedback').addEventListener('click', closeModal);
+    
+    const form = document.getElementById('feedback-modal-form');
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const rating = document.querySelector('#feedback-modal-form input[name="rating"]:checked').value;
+        const comment = document.getElementById('modal-feedback-comment').value;
+        
+        submitModalFeedback(ticketId, rating, comment);
+    });
+}
+
+function submitModalFeedback(ticketId, rating, comment) {
+    fetch(`/api/feedback/${ticketId}/add`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ rating, comment })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message === 'Feedback submitted successfully') {
+            closeModal();
+            showToast('success', 'Thank You', 'Your feedback has been submitted');
+            loadTicketDetails(ticketId);
+        } else {
+            showToast('error', 'Error', data.message || 'Failed to submit feedback');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('error', 'Error', 'Failed to submit feedback');
+    });
+}
+
+function updateTicketUI(ticket) {
+    const statusBadge = document.getElementById('ticket-status-badge');
+    if (statusBadge) {
+        statusBadge.textContent = formatStatus(ticket.status);
+        statusBadge.dataset.status = ticket.status;
+    }
+    
+    const statusSelect = document.getElementById('ticket-status');
+    if (statusSelect) {
+        statusSelect.value = ticket.status;
+    }
+    
+    const priorityBadge = document.getElementById('ticket-priority-badge');
+    if (priorityBadge) {
+        priorityBadge.textContent = ticket.priority;
+        priorityBadge.dataset.priority = ticket.priority;
+    }
+    
+    const prioritySelect = document.getElementById('ticket-priority');
+    if (prioritySelect) {
+        prioritySelect.value = ticket.priority;
+    }
+    
+    if (ticket.status === 'resolved' && lastStatus !== 'resolved') {
+        loadFeedbackStatus(ticket._id);
+        
+        const currentUserId = document.querySelector('meta[name="user-id"]')?.content;
+        if (currentUserId === ticket.user._id) {
+            showFeedbackPrompt(ticket._id);
+        }
+    }
+    
+    lastStatus = ticket.status;
+    lastPriority = ticket.priority;
+}
+
+function showFeedbackPrompt(ticketId) {
+    fetch(`/api/feedback/${ticketId}`)
+        .then(resp => {
+            if (resp.status === 404) {
+                openFeedbackModal(ticketId);
+            }
+        })
+        .catch(err => {
+            openFeedbackModal(ticketId);
+        });
+}
+
+function checkForUpdates(ticketId) {
+    fetch(`/api/ticket/${ticketId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.ticket) {
+                const statusChanged = data.ticket.status !== lastStatus;
+                const priorityChanged = data.ticket.priority !== lastPriority;
+                
+                if (statusChanged || priorityChanged) {
+                    updateTicketUI(data.ticket);
+                    
+                    if (statusChanged) {
+                        const newStatus = formatStatus(data.ticket.status);
+                        showToast('info', 'Status Updated', `Ticket status changed to ${newStatus}`);
+                        
+                        if (data.ticket.status === 'resolved') {
+                            const currentUserId = document.querySelector('meta[name="user-id"]')?.content;
+                            if (currentUserId === data.ticket.user._id) {
+                                showFeedbackPrompt(ticketId);
+                            }
+                        }
+                    }
+                    
+                    if (priorityChanged) {
+                        showToast('info', 'Priority Updated', `Ticket priority changed to ${data.ticket.priority}`);
+                    }
+                }
+                
+                if (data.comments && data.comments.length !== lastCommentCount && lastCommentCount > 0) {
+                    renderComments(data.comments);
+                    showToast('info', 'New Comment', 'A new comment has been added to this ticket');
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error checking for ticket updates:', error);
+        });
+    
+    fetch(`/api/ticket/${ticketId}/history`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.history && data.history.length !== lastHistoryCount && lastHistoryCount > 0) {
+                loadTicketHistory(ticketId);
+                showToast('info', 'History Updated', 'Ticket history has been updated');
+            }
+        })
+        .catch(error => {
+            console.error('Error checking for history updates:', error);
+        });
 }
 
 function formatRole(role) {

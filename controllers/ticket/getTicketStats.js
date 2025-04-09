@@ -20,7 +20,15 @@ module.exports = async (req, res) => {
                     total: 0,
                     byStatus: { open: 0, inProgress: 0, resolved: 0, closed: 0, canceled: 0 },
                     byPriority: { low: 0, medium: 0, high: 0 },
-                    byRole: { '1st-line': 0, '2nd-line': 0, unassigned: 0 }
+                    byRole: { 
+                        '1st-line': {
+                            total: 0, open: 0, inProgress: 0, resolved: 0, closed: 0, canceled: 0
+                        }, 
+                        '2nd-line': {
+                            total: 0, open: 0, inProgress: 0, resolved: 0, closed: 0, canceled: 0
+                        }, 
+                        unassigned: 0 
+                    }
                 }
             });
         }
@@ -28,7 +36,7 @@ module.exports = async (req, res) => {
         // Get tickets for this organization
         const tickets = await Ticket.find({ _id: { $in: userOrg.tickets } });
         
-        // Calculate statistics
+        // Calculate basic statistics
         const stats = {
             total: tickets.length,
             byStatus: {
@@ -46,15 +54,41 @@ module.exports = async (req, res) => {
             byRole: {
                 '1st-line': {
                     total: tickets.filter(t => t.assignedRole === '1st-line').length,
+                    open: tickets.filter(t => t.assignedRole === '1st-line' && t.status === 'open').length,
+                    inProgress: tickets.filter(t => t.assignedRole === '1st-line' && t.status === 'in-progress').length,
                     resolved: tickets.filter(t => t.assignedRole === '1st-line' && t.status === 'resolved').length,
-                    closed: tickets.filter(t => t.assignedRole === '1st-line' && t.status === 'closed').length
+                    closed: tickets.filter(t => t.assignedRole === '1st-line' && t.status === 'closed').length,
+                    canceled: tickets.filter(t => t.assignedRole === '1st-line' && t.status === 'canceled').length
                 },
                 '2nd-line': {
                     total: tickets.filter(t => t.assignedRole === '2nd-line').length,
+                    open: tickets.filter(t => t.assignedRole === '2nd-line' && t.status === 'open').length,
+                    inProgress: tickets.filter(t => t.assignedRole === '2nd-line' && t.status === 'in-progress').length,
                     resolved: tickets.filter(t => t.assignedRole === '2nd-line' && t.status === 'resolved').length,
-                    closed: tickets.filter(t => t.assignedRole === '2nd-line' && t.status === 'closed').length
+                    closed: tickets.filter(t => t.assignedRole === '2nd-line' && t.status === 'closed').length,
+                    canceled: tickets.filter(t => t.assignedRole === '2nd-line' && t.status === 'canceled').length
                 },
                 unassigned: tickets.filter(t => !t.assignedRole).length
+            }
+        };
+        
+        // Calculate additional metrics for admin dashboard
+        
+        // Get agent performance metrics
+        const firstLineAgents = await User.find({ role: '1st-line' });
+        const secondLineAgents = await User.find({ role: '2nd-line' });
+        
+        // Agent statistics
+        stats.agentStats = {
+            '1st-line': {
+                count: firstLineAgents.length,
+                avgTicketsPerAgent: firstLineAgents.length > 0 ? 
+                    Math.round(stats.byRole['1st-line'].total / firstLineAgents.length * 10) / 10 : 0
+            },
+            '2nd-line': {
+                count: secondLineAgents.length,
+                avgTicketsPerAgent: secondLineAgents.length > 0 ? 
+                    Math.round(stats.byRole['2nd-line'].total / secondLineAgents.length * 10) / 10 : 0
             }
         };
         

@@ -484,7 +484,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // Category
-            row.querySelector('.ticket-category').textContent = ticket.category.name;
+            row.querySelector('.ticket-category').textContent = ticket.category?.name;
             
             // Priority
             const priorityBadge = row.querySelector('.priority-badge');

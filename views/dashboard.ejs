@@ -120,6 +120,19 @@
                 </div>
             </div>
         <% } %>
+        <% if (isAdmin) { %>
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h3>Support Team Performance</h3>
+                </div>
+                <div id="support-performance">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Loading performance metrics...</p>
+                    </div>
+                </div>
+            </div>
+        <% } %>
     </div>
     
     <!-- Create organization section - hidden by default -->

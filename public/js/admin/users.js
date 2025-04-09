@@ -12,11 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         fetch('/api/org/users')
             .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
             .then(data => {
@@ -159,11 +154,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 })
             })
             .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
             .then(data => {
@@ -205,11 +195,6 @@ document.addEventListener('DOMContentLoaded', () => {
             body: JSON.stringify({ userId })
         })
         .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
         .then(data => {
@@ -296,11 +281,6 @@ document.addEventListener('DOMContentLoaded', () => {
             method: 'DELETE'
         })
         .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
         .then(data => {
@@ -344,11 +324,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 })
             })
             .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
             .then(data => {

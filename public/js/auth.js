@@ -26,11 +26,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: JSON.stringify({ email, password })
             })
             .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showAuthError(err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
             .then(data => {
@@ -95,11 +90,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: JSON.stringify({ email, password, checkPassword })
             })
             .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showAuthError(err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
             .then(data => {

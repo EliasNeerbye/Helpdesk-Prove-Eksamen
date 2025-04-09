@@ -32,11 +32,6 @@ function loadCategories() {
     
     fetch('/api/category/list')
         .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
         .then(data => {
@@ -119,11 +114,6 @@ function renderCategories(categories) {
 function countTicketsForCategory(categoryId) {
     return fetch('/api/ticket/list')
         .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
         .then(data => {
@@ -200,11 +190,6 @@ function createCategory(formData) {
         body: JSON.stringify(formData)
     })
     .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
     .then(data => {
@@ -241,11 +226,6 @@ function updateCategory(categoryId, formData) {
         body: JSON.stringify(formData)
     })
     .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
     .then(data => {
@@ -312,11 +292,6 @@ function deleteCategory(categoryId) {
         }
     })
     .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
     .then(data => {

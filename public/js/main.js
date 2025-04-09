@@ -29,11 +29,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             })
             .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error', 'Error', err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
             .then(data => {
@@ -248,11 +243,6 @@ function openCreateTicketModal() {
             body: JSON.stringify(formData)
         })
         .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error', 'Error', err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
         .then(data => {
@@ -306,11 +296,6 @@ function openStatsModal() {
     // Fetch ticket stats
     fetch('/api/ticket/stats')
         .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error', 'Error', err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
         .then(data => {
@@ -395,11 +380,6 @@ function openStatsModal() {
 function fetchCategories() {
     return fetch('/api/category/list')
         .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error', 'Error', err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
         .then(data => {

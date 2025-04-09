@@ -86,11 +86,6 @@ function deleteTicket(ticketId) {
         }
     })
     .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
     .then(data => {
@@ -126,11 +121,6 @@ function addComment(ticketId) {
         body: JSON.stringify({ content })
     })
     .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
     .then(data => {
@@ -140,11 +130,6 @@ function addComment(ticketId) {
             
             fetch(`/api/comment/${ticketId}/list`)
                 .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
                 .then(commentData => {
@@ -168,11 +153,6 @@ function addComment(ticketId) {
 function loadTicketDetails(ticketId) {
     fetch(`/api/ticket/${ticketId}`)
         .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
         .then(data => {
@@ -267,11 +247,6 @@ function loadTicketHistory(ticketId) {
     
     fetch(`/api/ticket/${ticketId}/history`)
         .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
         .then(data => {
@@ -398,11 +373,6 @@ function updateTicket(ticketId, updateData) {
         body: JSON.stringify(updateData)
     })
     .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
     .then(data => {
@@ -480,11 +450,6 @@ function openAssignModal(ticketId) {
 function loadSupportAgents() {
     fetch('/api/org/users')
         .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
         .then(data => {
@@ -534,11 +499,6 @@ function assignTicket(ticketId, userId, role) {
         body: JSON.stringify({ userId, role })
     })
     .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
     .then(data => {
@@ -563,11 +523,6 @@ function loadFeedbackStatus(ticketId) {
 
     fetch(`/api/ticket/${ticketId}`)
         .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
         .then(data => {
@@ -736,11 +691,6 @@ function submitFeedback(ticketId) {
         body: JSON.stringify({ rating, comment })
     })
     .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
     .then(data => {
@@ -835,11 +785,6 @@ function submitModalFeedback(ticketId, rating, comment) {
         body: JSON.stringify({ rating, comment })
     })
     .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
     .then(data => {
@@ -922,11 +867,6 @@ function showFeedbackPrompt(ticketId) {
 function checkForUpdates(ticketId) {
     fetch(`/api/ticket/${ticketId}`)
         .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
         .then(data => {
@@ -966,11 +906,6 @@ function checkForUpdates(ticketId) {
     
     fetch(`/api/ticket/${ticketId}/history`)
         .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
         .then(data => {

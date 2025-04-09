@@ -48,11 +48,6 @@ function updateDataStates() {
 function checkForUpdates(ticketId) {
     fetch(`/api/ticket/${ticketId}`)
         .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
         .then(data => {
@@ -74,11 +69,6 @@ function checkForUpdates(ticketId) {
     
     fetch(`/api/ticket/${ticketId}/history`)
         .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
         .then(data => {

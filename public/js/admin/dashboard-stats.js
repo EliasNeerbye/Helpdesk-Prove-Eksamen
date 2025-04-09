@@ -9,11 +9,6 @@ function loadRoleBasedStats() {
     
     fetch('/api/ticket/stats')
         .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
         .then(data => {
@@ -144,11 +139,6 @@ function loadSupportPerformanceMetrics() {
     
     fetch('/api/ticket/stats')
         .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
         .then(data => {

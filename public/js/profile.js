@@ -171,11 +171,6 @@ function createProfile() {
         body: JSON.stringify(formData)
     })
     .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
     .then(data => {
@@ -215,11 +210,6 @@ function updateProfile() {
         body: JSON.stringify(formData)
     })
     .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
     .then(data => {
@@ -264,11 +254,6 @@ function uploadProfilePhoto(file) {
         body: formData
     })
     .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
     .then(data => {
@@ -343,11 +328,6 @@ function deleteProfile() {
         }
     })
     .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
     .then(data => {
@@ -379,11 +359,6 @@ function deleteProfile() {
 function fetchProfileData() {
     return fetch('/api/profile/get')
         .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
         .catch(error => {

@@ -123,11 +123,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         fetch('/api/ticket/list')
             .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showTaost('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
             .then(data => {

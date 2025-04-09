@@ -33,11 +33,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         fetch('/api/org/users')
             .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
             .then(data => {
@@ -71,11 +66,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         fetch('/api/category/list')
             .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
             .then(data => {
@@ -121,11 +111,6 @@ document.addEventListener('DOMContentLoaded', function() {
             body: JSON.stringify(data)
         })
         .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error','Error',err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
         .then(data => {

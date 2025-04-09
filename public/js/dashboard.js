@@ -84,11 +84,6 @@ function showCreateOrgButton() {
                         body: JSON.stringify(data)
                     })
                     .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error', 'Error', err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
                     .then(data => {
@@ -225,11 +220,6 @@ function loadSummaryCounts() {
     // My tickets count
     fetch('/api/ticket/list')
         .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error', 'Error', err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
         .then(data => {
@@ -258,11 +248,6 @@ function loadSummaryCounts() {
         // Open tickets count
         fetch('/api/ticket/stats')
             .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error', 'Error', err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
             .then(data => {
@@ -272,11 +257,6 @@ function loadSummaryCounts() {
                     // Total users count - fetch from organization users
                     fetch('/api/org/users')
                         .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error', 'Error', err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
                         .then(userData => {
@@ -306,11 +286,6 @@ function loadRecentTickets() {
     // First check if user has a profile
     fetch('/api/profile/get')
         .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error', 'Error', err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
         .then(profileData => {
@@ -331,11 +306,6 @@ function loadRecentTickets() {
             // If has profile, continue to load tickets
             fetch('/api/ticket/list')
                 .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error', 'Error', err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
                 .then(data => {
@@ -415,11 +385,6 @@ function loadTicketStats() {
     
     fetch('/api/ticket/stats')
         .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error', 'Error', err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
         .then(data => {
@@ -513,11 +478,6 @@ function loadActivityFeed() {
     // First check if user has a profile
     fetch('/api/profile/get')
         .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error', 'Error', err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
         .then(profileData => {
@@ -538,11 +498,6 @@ function loadActivityFeed() {
             // Here we're using the ticket history endpoint, but filtering for the current user's activities
             fetch('/api/ticket/list')
                 .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error', 'Error', err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
                 .then(data => {
@@ -556,11 +511,6 @@ function loadActivityFeed() {
                         Promise.all(recentTickets.map(ticket => 
                             fetch(`/api/ticket/${ticket._id}`)
                                 .then(response => {
-    if (!response.ok) {
-        return response.json().then(err => {
-            showToast('error', 'Error', err.message || 'An error occurred');
-        });
-    }
     return response.json();
 })
                                 .catch(error => {

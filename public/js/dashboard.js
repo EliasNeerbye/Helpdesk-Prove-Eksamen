@@ -230,7 +230,7 @@ function loadSummaryCounts() {
                 const isAdmin = document.querySelector('.nav-group') !== null;
                 if (!isAdmin) {
                     const inProgressCount = data.tickets.filter(ticket => ticket.status === 'in-progress').length;
-                    const resolvedCount = data.tickets.filter(ticket => ticket.status === 'resolved').length;
+                    const resolvedCount = data.tickets.filter(ticket => ticket.status === 'resolved').length + data.tickets.filter(ticket => ticket.status === 'closed').length;
                     
                     document.getElementById('in-progress-count').textContent = inProgressCount;
                     document.getElementById('resolved-count').textContent = resolvedCount;

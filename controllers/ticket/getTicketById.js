@@ -6,7 +6,6 @@ module.exports = async (req, res) => {
     const { ticketId } = req.params;
     const userId = req.user._id;
     const isAdmin = req.user.role === 'admin';
-    const isSupport = req.user.role === '1st-line' || req.user.role === '2nd-line';
     
     if (!ticketId) {
         return res.status(400).json({ message: 'Ticket ID is required' });

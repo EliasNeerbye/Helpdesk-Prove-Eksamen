@@ -39,7 +39,6 @@ module.exports = async (req, res) => {
             return res.status(403).json({ message: 'You must be assigned to this ticket to update it' });
         }
         
-        // Rest of the code remains the same...
         const updateData = {};
         
         if (status) {

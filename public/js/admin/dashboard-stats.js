@@ -48,6 +48,12 @@ function loadRoleBasedStats() {
                                         <div class="stat-item">
                                             <span class="stat-label">Resolution Rate:</span>
                                             <span class="stat-value">${calculateRate(roleStats['1st-line'].resolved + roleStats['1st-line'].closed, roleStats['1st-line'].total)}%</span>
+                                            <script>
+                                            console.log('1st Line Support Resolution Rate:', ${calculateRate(roleStats['1st-line'].resolved + roleStats['1st-line'].closed, roleStats['1st-line'].total)});
+                                            console.log('1st Line Support Total Tickets:', ${roleStats['1st-line'].total});
+                                            console.log('1st Line Support Resolved:', ${roleStats['1st-line'].resolved});
+                                            console.log('1st Line Support Closed:', ${roleStats['1st-line'].closed});
+                                            </script>
                                         </div>
                                     </div>
                                 </div>
@@ -78,6 +84,12 @@ function loadRoleBasedStats() {
                                         <div class="stat-item">
                                             <span class="stat-label">Resolution Rate:</span>
                                             <span class="stat-value">${calculateRate(roleStats['2nd-line'].resolved + roleStats['1st-line'].closed, roleStats['2nd-line'].total)}%</span>
+                                            <script>
+                                            console.log('2nd Line Support Resolution Rate:', ${calculateRate(roleStats['2nd-line'].resolved + roleStats['1st-line'].closed, roleStats['2nd-line'].total)});
+                                            console.log('2nd Line Support Total Tickets:', ${roleStats['2nd-line'].total});
+                                            console.log('2nd Line Support Resolved:', ${roleStats['2nd-line'].resolved});
+                                            console.log('2nd Line Support Closed:', ${roleStats['2nd-line'].closed});
+                                            </script>
                                         </div>
                                     </div>
                                 </div>

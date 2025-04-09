@@ -102,6 +102,8 @@ app.use((req, res) => {
     res.status(404).render("error", {
         status: 404,
         message: "Page not found",
+        title: "Error",
+        error: null,
     });
 });
 

@@ -234,7 +234,7 @@ $PM2_PATH save
 
 # Run the mock data script
 log "Running mock data script..."
-node mockdata.js
+node mock-data.js
 log "Mock data script executed. Categories and professions populated."
 
 # Create necessary directories for uploads

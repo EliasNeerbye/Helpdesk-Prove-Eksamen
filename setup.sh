@@ -41,7 +41,7 @@ if [ -z "$SERVER_IP" ]; then
 fi
 
 
-$USER_ALIAS="caracal"
+USER_ALIAS="caracal"
 DOMAIN="support.$USER_ALIAS.ikt-fag.no"
 
 # Split IP into parts and increment the last octet
